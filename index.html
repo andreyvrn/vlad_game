@@ -1,0 +1,3642 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ночной Змееборец — Они все летают...</title>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Russo+One&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --blood-red: #8b0000;
+            --dark-blood: #4a0000;
+            --flesh: #d4a574;
+            --bone: #f5f5dc;
+            --shadow: #0a0505;
+            --pennywise-red: #cc0000;
+            --deadlight-orange: #ff6600;
+            --vika-purple: #6a0dad;
+        }
+
+        body {
+            background: var(--shadow);
+            color: var(--bone);
+            font-family: 'Russo One', sans-serif;
+            overflow-x: hidden;
+            cursor: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="12" fill="%238b0000" opacity="0.7"/><circle cx="16" cy="16" r="6" fill="%23ff0000"/></svg>') 16 16, auto;
+        }
+
+        /* ===== ANIMATED BACKGROUND ===== */
+        .background-horror {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse at 20% 80%, rgba(138, 0, 0, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(106, 13, 173, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(10, 5, 5, 1) 0%, rgba(20, 10, 15, 1) 100%);
+        }
+
+        /* Blood drips */
+        .blood-drip {
+            position: fixed;
+            top: -100px;
+            width: 8px;
+            background: linear-gradient(to bottom, var(--blood-red), var(--dark-blood));
+            border-radius: 0 0 50% 50%;
+            animation: drip linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes drip {
+            0% { transform: translateY(-100px); height: 50px; }
+            50% { height: 150px; }
+            100% { transform: translateY(120vh); height: 80px; }
+        }
+
+        /* Floating balloons */
+        .balloon {
+            position: fixed;
+            width: 40px;
+            height: 50px;
+            border-radius: 50% 50% 50% 50%;
+            animation: float-balloon linear infinite;
+            z-index: 2;
+            opacity: 0.8;
+            filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.5));
+        }
+
+        .balloon::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            width: 2px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-50%);
+        }
+
+        .balloon.red { background: radial-gradient(circle at 30% 30%, #ff4444, #cc0000, #880000); }
+        .balloon.yellow { background: radial-gradient(circle at 30% 30%, #ffff44, #cccc00, #888800); }
+        .balloon.blue { background: radial-gradient(circle at 30% 30%, #4444ff, #0000cc, #000088); }
+
+        @keyframes float-balloon {
+            0% { transform: translateY(120vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        /* Evil rubber ducks */
+        .evil-duck {
+            position: fixed;
+            width: 50px;
+            height: 50px;
+            animation: float-duck ease-in-out infinite;
+            z-index: 2;
+            filter: drop-shadow(0 0 15px rgba(255, 100, 0, 0.6));
+        }
+
+        @keyframes float-duck {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* Blood splatter effect */
+        .blood-splatter {
+            position: fixed;
+            border-radius: 50%;
+            background: radial-gradient(ellipse, var(--blood-red), transparent);
+            animation: splatter 0.5s ease-out forwards;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        @keyframes splatter {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            padding: 20px;
+        }
+
+        .title-container {
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Creepster', cursive;
+            font-size: clamp(3rem, 10vw, 8rem);
+            color: var(--blood-red);
+            text-shadow: 
+                0 0 10px var(--blood-red),
+                0 0 20px var(--blood-red),
+                0 0 40px var(--dark-blood),
+                4px 4px 0 #000;
+            animation: flicker 3s infinite;
+            letter-spacing: 5px;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            92% { opacity: 1; }
+            93% { opacity: 0.8; }
+            94% { opacity: 1; }
+            96% { opacity: 0.9; }
+            97% { opacity: 1; }
+        }
+
+        .subtitle {
+            font-family: 'Press Start 2P', monospace;
+            font-size: clamp(0.8rem, 2vw, 1.2rem);
+            color: var(--deadlight-orange);
+            margin-top: 20px;
+            text-shadow: 0 0 10px var(--deadlight-orange);
+            animation: pulse-text 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-text {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .tagline {
+            font-size: 1.5rem;
+            color: #888;
+            margin-top: 30px;
+            font-style: italic;
+            max-width: 600px;
+        }
+
+        .tagline span {
+            color: var(--pennywise-red);
+            font-weight: bold;
+        }
+
+        /* Play button */
+        .play-btn {
+            margin-top: 50px;
+            padding: 20px 60px;
+            font-family: 'Creepster', cursive;
+            font-size: 2rem;
+            background: linear-gradient(180deg, var(--blood-red), var(--dark-blood));
+            color: var(--bone);
+            border: 3px solid var(--pennywise-red);
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            box-shadow: 
+                0 0 20px rgba(139, 0, 0, 0.5),
+                inset 0 0 20px rgba(0, 0, 0, 0.3);
+            animation: pulse-button 2s ease-in-out infinite;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 
+                0 0 40px rgba(255, 0, 0, 0.8),
+                inset 0 0 30px rgba(255, 100, 0, 0.3);
+            text-shadow: 0 0 10px #fff;
+        }
+
+        @keyframes pulse-button {
+            0%, 100% { box-shadow: 0 0 20px rgba(139, 0, 0, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(139, 0, 0, 0.8); }
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-indicator::before {
+            content: '▼';
+            font-size: 2rem;
+            color: var(--blood-red);
+            text-shadow: 0 0 10px var(--blood-red);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(15px); }
+        }
+
+        /* ===== STORY SECTION ===== */
+        .story-section {
+            padding: 100px 20px;
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(106, 13, 173, 0.1) 50%, 
+                transparent 100%);
+            position: relative;
+        }
+
+        .story-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--blood-red), transparent);
+        }
+
+        .story-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .story-title {
+            font-family: 'Creepster', cursive;
+            font-size: 3rem;
+            color: var(--vika-purple);
+            text-align: center;
+            margin-bottom: 50px;
+            text-shadow: 0 0 20px var(--vika-purple);
+        }
+
+        .story-text {
+            font-size: 1.2rem;
+            line-height: 2;
+            text-align: justify;
+            color: #ccc;
+        }
+
+        .story-text p {
+            margin-bottom: 30px;
+            text-indent: 40px;
+        }
+
+        .story-text .highlight {
+            color: var(--pennywise-red);
+            font-weight: bold;
+            text-shadow: 0 0 5px var(--pennywise-red);
+        }
+
+        .story-text .vika {
+            color: var(--vika-purple);
+            font-weight: bold;
+            text-shadow: 0 0 5px var(--vika-purple);
+        }
+
+        .story-text .deadlight {
+            color: var(--deadlight-orange);
+            font-weight: bold;
+            text-shadow: 0 0 5px var(--deadlight-orange);
+        }
+
+        .story-quote {
+            font-family: 'Creepster', cursive;
+            font-size: 2rem;
+            color: var(--pennywise-red);
+            text-align: center;
+            padding: 40px;
+            margin: 40px 0;
+            border-left: 4px solid var(--blood-red);
+            border-right: 4px solid var(--blood-red);
+            background: rgba(139, 0, 0, 0.1);
+        }
+
+        /* ===== CHARACTERS SECTION ===== */
+        .characters-section {
+            padding: 100px 20px;
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(139, 0, 0, 0.05) 50%, 
+                transparent 100%);
+        }
+
+        .section-title {
+            font-family: 'Creepster', cursive;
+            font-size: 3rem;
+            color: var(--blood-red);
+            text-align: center;
+            margin-bottom: 60px;
+            text-shadow: 0 0 20px var(--blood-red);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .character-card {
+            background: linear-gradient(180deg, rgba(20, 10, 15, 0.9), rgba(10, 5, 5, 0.95));
+            border: 2px solid var(--blood-red);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .character-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(139, 0, 0, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .character-card:hover::before {
+            left: 100%;
+        }
+
+        .character-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(139, 0, 0, 0.3);
+            border-color: var(--pennywise-red);
+        }
+
+        .character-card.secret {
+            border-color: #333;
+            background: linear-gradient(180deg, rgba(10, 10, 10, 0.95), rgba(5, 5, 5, 0.98));
+        }
+
+        .character-card.secret .character-image-container {
+            filter: brightness(0.1);
+        }
+
+        .character-card.secret .character-name {
+            color: #444;
+        }
+
+        .character-image-container {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            border: 3px solid var(--blood-red);
+            overflow: hidden;
+            position: relative;
+            background: #0a0505;
+        }
+
+        .character-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .character-image.game-art {
+            z-index: 2;
+        }
+
+        .character-image.real-photo {
+            z-index: 1;
+            filter: sepia(30%) contrast(120%) brightness(80%);
+        }
+
+        .character-image.hidden {
+            opacity: 0;
+        }
+
+        .character-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        .character-name {
+            font-family: 'Creepster', cursive;
+            font-size: 1.8rem;
+            color: var(--deadlight-orange);
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px var(--deadlight-orange);
+        }
+
+        .character-role {
+            color: var(--blood-red);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .character-desc {
+            color: #999;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .character-card.villain .character-name {
+            color: var(--vika-purple);
+            text-shadow: 0 0 10px var(--vika-purple);
+        }
+
+        .character-card.villain {
+            border-color: var(--vika-purple);
+        }
+
+        .secret-label {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #222;
+            color: #555;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Hero cards */
+        .character-card.hero-card {
+            border-color: #4ade4a;
+            box-shadow: 0 0 20px rgba(74, 222, 74, 0.3);
+        }
+
+        .character-card.hero-card .character-name {
+            color: #4ade4a;
+            text-shadow: 0 0 10px #4ade4a;
+        }
+
+        .hero-label {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #4ade4a, #228b22);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        /* Final boss card */
+        .character-card.final-boss {
+            border-color: #00ff00;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+            animation: bossGlow 2s ease-in-out infinite;
+        }
+
+        .character-card.final-boss .character-name {
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        .boss-label {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #00ff00, #006600);
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            z-index: 10;
+            animation: pulse-button 1s ease-in-out infinite;
+        }
+
+        @keyframes bossGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(0, 255, 0, 0.7); }
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 100px 20px;
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(255, 68, 0, 0.05) 50%, 
+                transparent 100%);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: rgba(20, 10, 15, 0.8);
+            border: 2px solid var(--blood-red);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(139, 0, 0, 0.5);
+            border-color: var(--pennywise-red);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h3 {
+            font-family: 'Creepster', cursive;
+            font-size: 1.5rem;
+            color: var(--pennywise-red);
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            color: #aaa;
+            line-height: 1.6;
+        }
+
+        /* Controls Section */
+        .controls-section {
+            padding: 80px 20px;
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(106, 13, 173, 0.05) 50%, 
+                transparent 100%);
+        }
+
+        .controls-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 50px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .control-group {
+            background: rgba(20, 10, 15, 0.8);
+            border: 2px solid var(--vika-purple);
+            border-radius: 15px;
+            padding: 30px;
+            min-width: 300px;
+        }
+
+        .control-group h3 {
+            font-family: 'Creepster', cursive;
+            font-size: 1.5rem;
+            color: var(--vika-purple);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .control-item {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(106, 13, 173, 0.3);
+            color: #ccc;
+        }
+
+        .control-item:last-child {
+            border-bottom: none;
+        }
+
+        .key {
+            display: inline-block;
+            background: var(--blood-red);
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 5px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.7rem;
+            margin: 0 3px;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            padding: 50px 20px;
+            text-align: center;
+            border-top: 1px solid var(--blood-red);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        footer p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        footer .warning {
+            color: var(--blood-red);
+            font-family: 'Creepster', cursive;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .story-title, .section-title { font-size: 2rem; }
+            .character-image-container { width: 150px; height: 150px; }
+        }
+
+        /* Eye that follows cursor */
+        .floating-eye {
+            position: fixed;
+            width: 60px;
+            height: 80px;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .floating-eye.visible {
+            opacity: 0.7;
+        }
+
+        /* Music Toggle Button */
+        .music-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(20, 10, 10, 0.8);
+            border: 2px solid #8b0000;
+            color: #cc0000;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(139, 0, 0, 0.4);
+        }
+
+        .music-toggle:hover {
+            background: rgba(139, 0, 0, 0.6);
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.6);
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .music-toggle {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+                top: 10px;
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-horror"></div>
+    
+    <!-- Floating Eye (follows cursor occasionally) -->
+    <svg class="floating-eye" id="floatingEye" viewBox="0 0 60 80">
+        <ellipse cx="30" cy="40" rx="28" ry="38" fill="#ff4400" opacity="0.8"/>
+        <ellipse cx="30" cy="40" rx="20" ry="30" fill="#ffcc00"/>
+        <ellipse id="eyePupil" cx="30" cy="40" rx="5" ry="25" fill="#000"/>
+    </svg>
+
+    <!-- HEADER -->
+    <header>
+        <button id="musicToggle" class="music-toggle" title="Включить музыку">🔇</button>
+        <div class="title-container">
+            <h1>НОЧНОЙ ЗМЕЕБОРЕЦ</h1>
+            <p class="subtitle">🎈 ОНИ ВСЕ ЛЕТАЮТ... 🎈</p>
+            <p class="tagline">
+                В мире, где <span>тьма</span> обретает форму, а кошмары выходят на охоту,
+                один человек в пижаме должен спасти своего лучшего друга...
+            </p>
+            <a href="snake_slayer.html" class="play-btn">🩸 НАЧАТЬ КОШМАР 🩸</a>
+        </div>
+        <div class="scroll-indicator"></div>
+    </header>
+
+    <!-- STORY SECTION -->
+    <section class="story-section">
+        <div class="story-container">
+            <h2 class="story-title">📜 ЛЕГЕНДА О ПОЖИРАТЕЛЬНИЦЕ МИРОВ 📜</h2>
+            
+            <div class="story-text">
+                <p>
+                    В бездне между мирами, там, где время не имеет значения, а пространство складывается 
+                    само в себя, существует <span class="vika">Королева Виктория</span> — древняя сущность, 
+                    чей голод не знает границ. Она не просто правит — она <span class="highlight">ПОЖИРАЕТ</span>. 
+                    Миры, души, страхи — всё становится её пищей.
+                </p>
+
+                <div class="story-quote">
+                    "Страх — это приправа. Отчаяние — основное блюдо. А надежда... 
+                    надежда делает жертву такой СЛАДКОЙ."
+                </div>
+
+                <p>
+                    Под её властью служат создания из чистого ужаса. <span class="highlight">Клоун Хихикуйз</span> — 
+                    танцующий клоун с улыбкой, полной иголок, и шариками, несущими смерть. Он — её шут, 
+                    собирающий страхи детей в красные воздушные шары. <span class="deadlight">Тусклые Огоньки</span> — 
+                    её истинные глаза, древние светила из-за пределов реальности, чей взгляд сводит с ума 
+                    и заставляет жертв ПАРИТЬ в бесконечном кошмаре.
+                </p>
+
+                <p>
+                    Вика не случайно выбрала <span class="highlight">Арбуза</span>. Этот пёс — носитель 
+                    древней магии бега, накопленной за 247 паркранов. Каждый забег под луной заряжал его 
+                    душу энергией, о которой он сам не подозревал. Энергией, способной 
+                    <span class="vika">ОТКРЫТЬ ВРАТА</span> между мирами.
+                </p>
+
+                <div class="story-quote">
+                    "Беги, маленький бегун. Беги быстрее. 
+                    Твой страх делает тебя ВКУСНЕЕ."
+                </div>
+
+                <p>
+                    Её слуги повсюду. Волдеморт, обменявший бессмертие на служение тьме. 
+                    Моржиха Ольга, закалённая ледяными купелями. Саурон, чьё Око теперь служит 
+                    <span class="vika">Виктории</span>. Даже <span class="highlight">Огненный Барсик</span> из 
+                    глубин Мории склонил рогатую голову перед Пожирательницей Миров.
+                </p>
+
+                <p>
+                    Но есть один, кто не боится. Один, кто встаёт в 6 утра по субботам. Один, кто 
+                    бежит в дождь и снег, в жару и холод. <span class="deadlight">Влад</span> — 
+                    человек в пижаме с метлой в руках. Он идёт через её царство, не подозревая, 
+                    что каждый его шаг — часть <span class="vika">БОЛЬШЕГО ПЛАНА</span>...
+                </p>
+
+                <div class="story-quote">
+                    "Они все летают здесь, внизу. И ТЫ тоже будешь летать."
+                </div>
+
+                <p>
+                    Резиновые уточки в лужах крови. Красные шарики, плывущие против ветра. 
+                    Смех, эхом разносящийся по пустым коридорам. Добро пожаловать в царство 
+                    <span class="vika">Королевы Виктории</span>. Добро пожаловать в место, 
+                    где кошмары <span class="highlight">РЕАЛЬНЫ</span>.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CHARACTERS SECTION -->
+    <section class="characters-section">
+        <h2 class="section-title">👥 ДЕЙСТВУЮЩИЕ ЛИЦА 👥</h2>
+        
+        <div class="characters-grid">
+            <!-- Vlad -->
+            <div class="character-card" data-character="vlad">
+                <div class="character-image-container">
+                    <canvas class="character-canvas" id="canvas-vlad" width="200" height="200"></canvas>
+                    <img class="character-image real-photo hidden" id="photo-vlad" src="photos/vlad.jpg" alt="Влад" onerror="this.style.display='none'">
+                </div>
+                <h3 class="character-name">Влад</h3>
+                <p class="character-role">Ночной Бегун</p>
+                <p class="character-desc">
+                    Человек в пижаме с метлой. 247 паркранов за плечами. Встаёт в 6 утра по субботам. 
+                    Его бабушка говорила: "Хороший бегун — мёртвый бегун". Она знала больше, чем казалось...
+                </p>
+            </div>
+
+            <!-- Arbuz -->
+            <div class="character-card" data-character="arbuz">
+                <div class="character-image-container">
+                    <canvas class="character-canvas" id="canvas-arbuz" width="200" height="200"></canvas>
+                    <img class="character-image real-photo hidden" id="photo-arbuz" src="photos/arbuz.jpg" alt="Арбуз" onerror="this.style.display='none'">
+                </div>
+                <h3 class="character-name">Арбуз</h3>
+                <p class="character-role">Верный Пёс</p>
+                <p class="character-desc">
+                    Носитель древней магии бега. Его душа — ключ к вратам между мирами. 
+                    Он не просто собака — он хранитель силы, о которой сам не подозревает. Пока.
+                </p>
+            </div>
+
+            <!-- Vika -->
+            <div class="character-card villain" data-character="vika">
+                <div class="character-image-container">
+                    <canvas class="character-canvas" id="canvas-vika" width="200" height="200"></canvas>
+                    <img class="character-image real-photo hidden" id="photo-vika" src="photos/vika.jpg" alt="Вика" onerror="this.style.display='none'">
+                </div>
+                <h3 class="character-name">Королева Виктория</h3>
+                <p class="character-role">Пожирательница Миров</p>
+                <p class="character-desc">
+                    Древняя богиня тьмы. Ей подчиняются Тусклые Огоньки и само ОНО. 
+                    Она пожирает страхи и миры. Арбуз — её последний ключ к абсолютной власти.
+                </p>
+            </div>
+
+            <!-- Pennywise -->
+            <div class="character-card villain" data-character="pennywise">
+                <div class="character-image-container">
+                    <canvas class="character-canvas" id="canvas-pennywise" width="200" height="200"></canvas>
+                    <img class="character-image real-photo hidden" id="photo-pennywise" src="photos/pennywise.jpg" alt="Клоун Хихикуйз" onerror="this.style.display='none'">
+                </div>
+                <h3 class="character-name">Клоун Хихикуйз</h3>
+                <p class="character-role">Танцующий Клоун</p>
+                <p class="character-desc">
+                    "Хочешь шарик, Влад? Они все летают здесь..." Шут королевы Вики, 
+                    собирающий страхи в красные воздушные шары. Его улыбка — последнее, что видят жертвы.
+                </p>
+            </div>
+
+            <!-- Deadlights -->
+            <div class="character-card villain" data-character="deadlights">
+                <div class="character-image-container">
+                    <canvas class="character-canvas" id="canvas-deadlights" width="200" height="200"></canvas>
+                    <img class="character-image real-photo hidden" id="photo-deadlights" src="photos/deadlights.jpg" alt="Deadlights" onerror="this.style.display='none'">
+                </div>
+                <h3 class="character-name">Тусклые Огоньки</h3>
+                <p class="character-role">Глаза Пустоты</p>
+                <p class="character-desc">
+                    Истинная форма ужаса. Три пульсирующих огня из-за пределов реальности. 
+                    Один взгляд — и разум тонет в бесконечном кошмаре, паря вечно.
+                </p>
+            </div>
+
+            <!-- Voldemort -->
+            <div class="character-card villain" data-character="voldemort">
+                <div class="character-image-container">
+                    <canvas class="character-canvas" id="canvas-voldemort" width="200" height="200"></canvas>
+                    <img class="character-image real-photo hidden" id="photo-voldemort" src="photos/voldemort.jpg" alt="Тёмный Лорд Олег" onerror="this.style.display='none'">
+                </div>
+                <h3 class="character-name">Тёмный Лорд Олег</h3>
+                <p class="character-role">Тёмный Лорд Олег</p>
+                <p class="character-desc">
+                    Тот-Кого-Нельзя-Называть продал остатки души за место в свите Виктории. 
+                    Теперь его Авада Кедавра служит Пожирательнице Миров.
+                </p>
+            </div>
+
+            <!-- Humus -->
+            <div class="character-card" data-character="humus">
+                <div class="character-image-container">
+                    <canvas class="character-canvas" id="canvas-humus" width="200" height="200"></canvas>
+                    <img class="character-image real-photo hidden" id="photo-humus" src="photos/humus.jpg" alt="Гумус" onerror="this.style.display='none'">
+                </div>
+                <h3 class="character-name">Гумус</h3>
+                <p class="character-role">Одержимый Трейлраннер</p>
+                <p class="character-desc">
+                    "ПАРКРАН ДЛЯ СЛАБАКОВ!" Безумный бегун, продавший душу за вечный бег. 
+                    Его стакан с кровавым смузи никогда не пустеет.
+                </p>
+            </div>
+
+            <!-- Alexey -->
+            <div class="character-card" data-character="alexey">
+                <div class="character-image-container">
+                    <canvas class="character-canvas" id="canvas-alexey" width="200" height="200"></canvas>
+                    <img class="character-image real-photo hidden" id="photo-alexey" src="photos/alexey.jpg" alt="Алексей" onerror="this.style.display='none'">
+                </div>
+                <h3 class="character-name">Алексей</h3>
+                <p class="character-role">Адский Турагент</p>
+                <p class="character-desc">
+                    "Горящие туры в АД! Только сегодня — скидка 66.6%!" 
+                    Его чемоданы полны проклятых душ, а путёвки ведут в одну сторону.
+                </p>
+            </div>
+
+            <!-- Church -->
+            <div class="character-card villain" data-character="church">
+                <div class="character-image-container">
+                    <canvas class="character-canvas" id="canvas-church" width="200" height="200"></canvas>
+                    <img class="character-image real-photo hidden" id="photo-church" src="photos/church.jpg" alt="Чёртик" onerror="this.style.display='none'">
+                </div>
+                <h3 class="character-name">Кот Чёртик</h3>
+                <p class="character-role">Вернувшийся из Тьмы</p>
+                <p class="character-desc">
+                    "Иногда мёртвое лучше..." Он вернулся с Кладбища Домашних Животных, 
+                    но вернулся ДРУГИМ. Теперь его горящие глаза служат Королеве Вике.
+                </p>
+            </div>
+
+            <!-- Sauron -->
+            <div class="character-card villain" data-character="sauron">
+                <div class="character-image-container">
+                    <canvas class="character-canvas" id="canvas-sauron" width="200" height="200"></canvas>
+                    <img class="character-image real-photo hidden" id="photo-sauron" src="photos/sauron.jpg" alt="Глаз Саврана" onerror="this.style.display='none'">
+                </div>
+                <h3 class="character-name">Глаз Саврана</h3>
+                <p class="character-role">Всезнающий Глаз</p>
+                <p class="character-desc">
+                    "Я ВИЖУ ТЕБЯ!" Тёмный Властелин Мордора склонил своё пылающее Око 
+                    перед Пожирательницей Миров. Теперь его назгулы патрулируют её царство.
+                </p>
+            </div>
+
+            <!-- Freddy -->
+            <div class="character-card villain" data-character="freddy">
+                <div class="character-image-container">
+                    <canvas class="character-canvas" id="canvas-freddy" width="200" height="200"></canvas>
+                    <img class="character-image real-photo hidden" id="photo-freddy" src="photos/freddy.jpg" alt="Фредди" onerror="this.style.display='none'">
+                </div>
+                <h3 class="character-name">Сонный Федя</h3>
+                <p class="character-role">Кошмар из Снов</p>
+                <p class="character-desc">
+                    "Раз, два, Фредди идёт за тобой..." Обожжённый убийца из снов. 
+                    Его перчатка с лезвиями режет не только плоть, но и саму реальность.
+                </p>
+            </div>
+
+            <!-- Balrog -->
+            <div class="character-card villain" data-character="balrog">
+                <div class="character-image-container">
+                    <canvas class="character-canvas" id="canvas-balrog" width="200" height="200"></canvas>
+                    <img class="character-image real-photo hidden" id="photo-balrog" src="photos/balrog.jpg" alt="Огненный Барсик" onerror="this.style.display='none'">
+                </div>
+                <h3 class="character-name">Огненный Барсик</h3>
+                <p class="character-role">Огненный Кот-Демон</p>
+                <p class="character-desc">
+                    Древний огненный кот-демон из глубин подземелья. Его пылающие лапы 
+                    испепеляют всех, кто осмелится ступить на его мост. "ТЫ НЕ ПРОЙДЁШЬ, МЯУ!"
+                </p>
+            </div>
+
+            <!-- Phantom -->
+            <div class="character-card villain" data-character="phantom">
+                <div class="character-image-container">
+                    <canvas class="character-canvas" id="canvas-phantom" width="200" height="200"></canvas>
+                    <img class="character-image real-photo hidden" id="photo-phantom" src="photos/phantom.jpg" alt="Масочник" onerror="this.style.display='none'">
+                </div>
+                <h3 class="character-name">Масочник</h3>
+                <p class="character-role">Повелитель Масок</p>
+                <p class="character-desc">
+                    Человек в белой маске, скрывающий изуродованное лицо. 
+                    Его театр теней — ловушка для душ, а музыка ночи — последняя колыбельная.
+                </p>
+            </div>
+
+            <!-- Maleficent -->
+            <div class="character-card villain" data-character="walrus_lady">
+                <div class="character-image-container">
+                    <canvas class="character-canvas" id="canvas-walrus_lady" width="200" height="200"></canvas>
+                    <img class="character-image real-photo hidden" id="photo-walrus_lady" src="photos/walrus_lady.jpg" alt="Моржиха Ольга" onerror="this.style.display='none'">
+                </div>
+                <h3 class="character-name">Моржиха Ольга</h3>
+                <p class="character-role">Королева Ледяной Купели</p>
+                <p class="character-desc">
+                    "Закалка — сила!" 20 лет моржевания превратили её в ледяную богиню. 
+                    Обливает врагов ледяной водой и кидается снежками. Ни одной простуды!
+                </p>
+            </div>
+
+            
+            <!-- Железнодорожница -->
+            <div class="character-card villain" data-character="railway_lady">
+                <div class="character-image-container">
+                    <canvas class="character-canvas" id="canvas-railway_lady" width="200" height="200"></canvas>
+                    <img class="character-image real-photo hidden" id="photo-railway_lady" src="photos/railway_lady.jpg" alt="Железнодорожница" onerror="this.style.display='none'">
+                </div>
+                <h3 class="character-name">Железнодорожница</h3>
+                <p class="character-role">Начальница Адской Станции</p>
+                <p class="character-desc">
+                    "С Днём железнодорожника!" Бывшая работница РЖД, 
+                    ныне управляет станцией "Конечная". Её свисток — последнее, что слышат путники.
+                </p>
+            </div>
+
+            <!-- Secret Character 1 - Valera (Hidden until discovered) -->
+            <div class="character-card secret" data-character="valera">
+                <span class="secret-label">🔒 СЕКРЕТНО</span>
+                <div class="character-image-container">
+                    <canvas class="character-canvas" id="canvas-valera" width="200" height="200"></canvas>
+                </div>
+                <h3 class="character-name">???</h3>
+                <p class="character-role">Истинный герой</p>
+                <p class="character-desc">
+                    Кто-то придёт на помощь, когда всё будет потеряно. Семья — сильнее любой магии...
+                </p>
+            </div>
+
+            <!-- Secret Character 2 - Busenka (Hidden until discovered) -->
+            <div class="character-card secret" data-character="busenka">
+                <span class="secret-label">🔒 СЕКРЕТНО</span>
+                <div class="character-image-container">
+                    <canvas class="character-canvas" id="canvas-busenka" width="200" height="200"></canvas>
+                </div>
+                <h3 class="character-name">???</h3>
+                <p class="character-role">Верный друг</p>
+                <p class="character-desc">
+                    Маленький, но храбрый. Первым почует правду... ЯФ-ЯФ!
+                </p>
+            </div>
+
+            <!-- Secret Character 3 - Evil Vlad (Hidden until discovered) -->
+            <div class="character-card secret" data-character="evil_vlad">
+                <span class="secret-label">🔒 СЕКРЕТНО</span>
+                <div class="character-image-container">
+                    <canvas class="character-canvas" id="canvas-evil_vlad" width="200" height="200"></canvas>
+                </div>
+                <h3 class="character-name">???</h3>
+                <p class="character-role">Истинный враг</p>
+                <p class="character-desc">
+                    Не всё то золото, что блестит. Герой может оказаться злодеем... 247...
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section class="features-section">
+        <h2 class="section-title">⚔️ Особенности ⚔️</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔥</div>
+                <h3>Режим Ярости</h3>
+                <p>Набери комбо x10 и активируй режим ярости! Ускоренные атаки и огненная аура на 5 секунд.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Комбо-система</h3>
+                <p>Цепочки ударов увеличивают урон и дают бонусные очки. Не дай комбо сбросится!</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏃</div>
+                <h3>Паркран-режим</h3>
+                <p>Собирай тортики, прыгай через препятствия и беги 5 км с Арбузом!</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👹</div>
+                <h3>15+ Боссов</h3>
+                <p>От Пеннивайза до Балрога. Каждый босс уникален и требует своей тактики.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>Мобильная версия</h3>
+                <p>Полная поддержка тач-управления. Играй где угодно!</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎭</div>
+                <h3>Сюжетные повороты</h3>
+                <p>Два секретных уровня и неожиданная развязка. Кто настоящий герой?</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTROLS SECTION -->
+    <section class="controls-section">
+        <h2 class="section-title">🎮 Управление 🎮</h2>
+        <div class="controls-container">
+            <div class="control-group">
+                <h3>⌨️ Клавиатура</h3>
+                <div class="control-item"><span class="key">W A S D</span> или <span class="key">↑ ← ↓ →</span> — Движение</div>
+                <div class="control-item"><span class="key">Пробел</span> — Атака / Прыжок</div>
+                <div class="control-item"><span class="key">Shift</span> — Рывок</div>
+                <div class="control-item"><span class="key">Esc</span> — Пауза</div>
+            </div>
+            <div class="control-group">
+                <h3>📱 Тачскрин</h3>
+                <div class="control-item">Виртуальный джойстик — Движение</div>
+                <div class="control-item">Кнопка УДАР — Атака</div>
+                <div class="control-item">Кнопка РЫВОК — Уклонение</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ACHIEVEMENTS SECTION -->
+    <section class="achievements-section">
+        <h2 class="section-title">🏆 Достижения 🏆</h2>
+        <div class="achievements-grid">
+            <div class="achievement-card">
+                <div class="achievement-icon">🗡️</div>
+                <h3>Змееборец</h3>
+                <p>Победи 100 врагов</p>
+            </div>
+            <div class="achievement-card">
+                <div class="achievement-icon">🔥</div>
+                <h3>Комбо-мастер</h3>
+                <p>Набери комбо x15</p>
+            </div>
+            <div class="achievement-card">
+                <div class="achievement-icon">💎</div>
+                <h3>Непреклонный</h3>
+                <p>Победи босса без урона</p>
+            </div>
+            <div class="achievement-card">
+                <div class="achievement-icon">🏃</div>
+                <h3>Марафонец</h3>
+                <p>Пробеги 10 км суммарно</p>
+            </div>
+            <div class="achievement-card">
+                <div class="achievement-icon">⚡</div>
+                <h3>Спидраннер</h3>
+                <p>Пройди уровень за минуту</p>
+            </div>
+            <div class="achievement-card">
+                <div class="achievement-icon">👹</div>
+                <h3>Босс-киллер</h3>
+                <p>Победи всех боссов</p>
+            </div>
+            <div class="achievement-card">
+                <div class="achievement-icon">🎈</div>
+                <h3>Шарик-лопатель</h3>
+                <p>Уничтожь 50 шариков</p>
+            </div>
+            <div class="achievement-card">
+                <div class="achievement-icon">🧊</div>
+                <h3>Моржеватель</h3>
+                <p>Победи Моржиху Ольгу</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATISTICS SECTION -->
+    <section class="stats-section">
+        <h2 class="section-title">📊 Статистика игры 📊</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" data-target="20">0</div>
+                <div class="stat-label">Уровней</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-target="14">0</div>
+                <div class="stat-label">Боссов</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-target="40">0</div>
+                <div class="stat-label">Типов атак</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-target="10">0</div>
+                <div class="stat-label">Достижений</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-target="18000">0</div>
+                <div class="stat-label">Строк кода</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-target="8">0</div>
+                <div class="stat-label">Музыкальных тем</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TIPS SECTION -->
+    <section class="tips-section">
+        <h2 class="section-title">💡 Советы 💡</h2>
+        <div class="tips-container">
+            <div class="tip-card">
+                <span class="tip-icon">⚔️</span>
+                <p>Используй рывок (Shift) для уклонения от атак боссов — во время рывка ты неуязвим!</p>
+            </div>
+            <div class="tip-card">
+                <span class="tip-icon">❤️</span>
+                <p>Каждые 5 ударов в комбо восстанавливают 2 HP. Держи комбо для выживания!</p>
+            </div>
+            <div class="tip-card">
+                <span class="tip-icon">⚡</span>
+                <p>При комбо x10 активируется режим Ярости — нажми E для спецатаки!</p>
+            </div>
+            <div class="tip-card">
+                <span class="tip-icon">🎯</span>
+                <p>Критические удары чаще происходят при высоком комбо. Максимум +30% шанса!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p class="warning">⚠️ ОСТОРОЖНО: Игра содержит уточек, шарики и экзистенциальный ужас ⚠️</p>
+        <p>© 2025 Ночной Змееборец. Все кошмары защищены.</p>
+        <p style="margin-top: 10px; color: #666;">Вдохновлено творчеством Влада Епихина</p>
+        <p style="margin-top: 5px; color: #444; font-size: 0.8rem;">Версия 0.1</p>
+    </footer>
+
+    <!-- STAR CANVAS (animated background) -->
+    <canvas id="starCanvas" class="star-canvas"></canvas>
+
+    <style>
+        /* ===== NEW SECTIONS STYLES ===== */
+        
+        /* Star Canvas */
+        .star-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            pointer-events: none;
+        }
+        
+        /* Achievements Section */
+        .achievements-section {
+            padding: 80px 20px;
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(139, 0, 0, 0.1) 50%, 
+                transparent 100%);
+        }
+        
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .achievement-card {
+            background: rgba(20, 10, 10, 0.8);
+            border: 1px solid rgba(139, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .achievement-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .achievement-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: rgba(255, 215, 0, 0.6);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .achievement-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .achievement-card h3 {
+            color: #ffd700;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .achievement-card p {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        /* Statistics Section */
+        .stats-section {
+            padding: 80px 20px;
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(106, 13, 173, 0.1) 50%, 
+                transparent 100%);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(30, 15, 30, 0.6);
+            border: 1px solid rgba(106, 13, 173, 0.4);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: scale(1.05);
+            border-color: rgba(106, 13, 173, 0.8);
+            box-shadow: 0 0 30px rgba(106, 13, 173, 0.4);
+        }
+        
+        .stat-number {
+            font-family: 'Creepster', cursive;
+            font-size: 3rem;
+            color: #cc0000;
+            text-shadow: 0 0 10px rgba(200, 0, 0, 0.5);
+        }
+        
+        .stat-label {
+            color: #aaa;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+        
+        /* Tips Section */
+        .tips-section {
+            padding: 60px 20px;
+            background: rgba(10, 5, 5, 0.5);
+        }
+        
+        .tips-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .tip-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 20px;
+            background: rgba(30, 20, 20, 0.8);
+            border-left: 3px solid #8b0000;
+            border-radius: 0 10px 10px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .tip-card:hover {
+            background: rgba(50, 30, 30, 0.9);
+            border-left-color: #ff0000;
+            transform: translateX(5px);
+        }
+        
+        .tip-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+        
+        .tip-card p {
+            color: #ccc;
+            line-height: 1.6;
+        }
+        
+        /* Enhanced play button */
+        .play-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .play-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 70%
+            );
+            animation: shine 3s ease-in-out infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+        
+        /* Scroll reveal animation */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s ease;
+        }
+        
+        .scroll-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Character card glow on hover */
+        .character-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 15px;
+            box-shadow: inset 0 0 30px rgba(139, 0, 0, 0);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .character-card:hover::after {
+            box-shadow: inset 0 0 30px rgba(139, 0, 0, 0.5);
+        }
+        
+        /* Floating particles around play button */
+        .play-btn-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .btn-particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #ff0000;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float-particle 3s ease-in-out infinite;
+        }
+        
+        @keyframes float-particle {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+                opacity: 0.7;
+            }
+            50% {
+                transform: translateY(-20px) scale(1.5);
+                opacity: 0.3;
+            }
+        }
+    </style>
+
+    <!--
+    ╔══════════════════════════════════════════════════════════════════════╗
+    ║  📷 КАК ПОДКЛЮЧИТЬ ФОТОГРАФИИ ПЕРСОНАЖЕЙ                             ║
+    ╠══════════════════════════════════════════════════════════════════════╣
+    ║                                                                      ║
+    ║  1. Создайте папку "photos" рядом с index.html                       ║
+    ║                                                                      ║
+    ║  2. Добавьте фотографии с именами:                                   ║
+    ║     photos/vlad.jpg      - Влад (главный герой)                      ║
+    ║     photos/arbuz.jpg     - Арбуз (корги)                             ║
+    ║     photos/vika.jpg      - Королева Вика                             ║
+    ║     photos/pennywise.jpg - Клоун Хихикуйз                                 ║
+    ║     photos/deadlights.jpg- Дедлайтс                                  ║
+    ║     photos/voldemort.jpg - Тёмный Лорд Олег                                 ║
+    ║     photos/humus.jpg     - Гумус                                     ║
+    ║     photos/alexey.jpg    - Алексей                                   ║
+    ║     photos/church.jpg    - Кот Чёртик                                  ║
+    ║     photos/sauron.jpg    - Глаз Саврана                                    ║
+    ║     photos/freddy.jpg    - Сонный Федя                             ║
+    ║     photos/balrog.jpg    - Огненный Барсик                                    ║
+    ║     photos/phantom.jpg   - Масочник                             ║
+    ║     photos/walrus_lady.jpg - Моржиха Марина                                   ║
+    ║                                                                      ║
+    ║  3. Фотографии будут чередоваться с анимацией каждые 4 секунды       ║
+    ║     (настройка TOGGLE_INTERVAL в конце файла)                        ║
+    ║                                                                      ║
+    ║  4. Рекомендуемый размер фото: 200x200 пикселей, квадратные          ║
+    ║                                                                      ║
+    ║  5. Если фото не найдено - показывается только анимация (без ошибок) ║
+    ║                                                                      ║
+    ║  Пример структуры папок:                                             ║
+    ║  ├── index.html                                                      ║
+    ║  ├── snake_slayer_v10_final.html                                     ║
+    ║  └── photos/                                                         ║
+    ║      ├── vlad.jpg                                                    ║
+    ║      ├── arbuz.jpg                                                   ║
+    ║      └── ...                                                         ║
+    ║                                                                      ║
+    ╚══════════════════════════════════════════════════════════════════════╝
+    -->
+
+    <script>
+        // ===== BLOOD DRIPS =====
+        function createBloodDrip() {
+            const drip = document.createElement('div');
+            drip.className = 'blood-drip';
+            drip.style.left = Math.random() * 100 + '%';
+            drip.style.animationDuration = (5 + Math.random() * 5) + 's';
+            drip.style.opacity = 0.3 + Math.random() * 0.5;
+            document.body.appendChild(drip);
+            
+            setTimeout(() => drip.remove(), 10000);
+        }
+        setInterval(createBloodDrip, 800);
+
+        // ===== BALLOONS =====
+        function createBalloon() {
+            const balloon = document.createElement('div');
+            balloon.className = 'balloon ' + ['red', 'red', 'red', 'yellow', 'blue'][Math.floor(Math.random() * 5)];
+            balloon.style.left = Math.random() * 100 + '%';
+            balloon.style.animationDuration = (15 + Math.random() * 10) + 's';
+            document.body.appendChild(balloon);
+            
+            setTimeout(() => balloon.remove(), 25000);
+        }
+        setInterval(createBalloon, 3000);
+
+        // ===== EVIL DUCKS =====
+        function createEvilDuck() {
+            const duck = document.createElement('div');
+            duck.className = 'evil-duck';
+            duck.innerHTML = `<svg viewBox="0 0 50 50">
+                <ellipse cx="25" cy="30" rx="18" ry="15" fill="#ffcc00"/>
+                <ellipse cx="25" cy="20" rx="12" ry="10" fill="#ffcc00"/>
+                <ellipse cx="18" cy="18" rx="3" ry="3" fill="#ff0000"/>
+                <ellipse cx="32" cy="18" rx="3" ry="3" fill="#ff0000"/>
+                <ellipse cx="18" cy="18" rx="1" ry="1" fill="#000"/>
+                <ellipse cx="32" cy="18" rx="1" ry="1" fill="#000"/>
+                <ellipse cx="25" cy="23" rx="5" ry="3" fill="#ff6600"/>
+                <path d="M 10 35 Q 5 40 8 45" stroke="#ffcc00" stroke-width="3" fill="none"/>
+            </svg>`;
+            duck.style.left = Math.random() * 90 + '%';
+            duck.style.top = Math.random() * 80 + '%';
+            duck.style.animationDuration = (2 + Math.random() * 2) + 's';
+            document.body.appendChild(duck);
+            
+            setTimeout(() => duck.remove(), 8000);
+        }
+        setInterval(createEvilDuck, 5000);
+
+        // ===== BLOOD SPLATTER ON CLICK =====
+        document.addEventListener('click', (e) => {
+            for (let i = 0; i < 5; i++) {
+                const splatter = document.createElement('div');
+                splatter.className = 'blood-splatter';
+                splatter.style.left = (e.clientX + (Math.random() - 0.5) * 50) + 'px';
+                splatter.style.top = (e.clientY + (Math.random() - 0.5) * 50) + 'px';
+                splatter.style.width = (20 + Math.random() * 30) + 'px';
+                splatter.style.height = splatter.style.width;
+                document.body.appendChild(splatter);
+                
+                setTimeout(() => splatter.remove(), 500);
+            }
+        });
+
+        // ===== FLOATING EYE =====
+        const floatingEye = document.getElementById('floatingEye');
+        const eyePupil = document.getElementById('eyePupil');
+        let eyeVisible = false;
+        let mouseX = 0, mouseY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            if (eyeVisible) {
+                // Pupil follows cursor
+                const rect = floatingEye.getBoundingClientRect();
+                const eyeCenterX = rect.left + rect.width / 2;
+                const eyeCenterY = rect.top + rect.height / 2;
+                const angle = Math.atan2(mouseY - eyeCenterY, mouseX - eyeCenterX);
+                const offsetX = Math.cos(angle) * 5;
+                const offsetY = Math.sin(angle) * 3;
+                eyePupil.setAttribute('cx', 30 + offsetX);
+                eyePupil.setAttribute('cy', 40 + offsetY);
+            }
+        });
+
+        // Randomly show the eye
+        setInterval(() => {
+            if (Math.random() < 0.3) {
+                floatingEye.style.left = (Math.random() * 80 + 10) + '%';
+                floatingEye.style.top = (Math.random() * 80 + 10) + '%';
+                floatingEye.classList.add('visible');
+                eyeVisible = true;
+                
+                setTimeout(() => {
+                    floatingEye.classList.remove('visible');
+                    eyeVisible = false;
+                }, 3000);
+            }
+        }, 5000);
+
+        // ===== CHARACTER CANVAS ANIMATIONS =====
+        const characters = {
+            vlad: { color: '#5dade2', drawFunc: drawVlad },
+            arbuz: { color: '#cd853f', drawFunc: drawArbuz },
+            vika: { color: '#9b59b6', drawFunc: drawVika },
+            pennywise: { color: '#cc0000', drawFunc: drawPennywise },
+            deadlights: { color: '#ff6600', drawFunc: drawDeadlights },
+            voldemort: { color: '#00ff00', drawFunc: drawVoldemort },
+            humus: { color: '#cc3333', drawFunc: drawHumus },
+            alexey: { color: '#4169e1', drawFunc: drawAlexey },
+            church: { color: '#505050', drawFunc: drawChurch },
+            sauron: { color: '#ff4400', drawFunc: drawSauron },
+            freddy: { color: '#006600', drawFunc: drawFreddy },
+            balrog: { color: '#ff3300', drawFunc: drawBalrog },
+            phantom: { color: '#ffffff', drawFunc: drawPhantom },
+            walrus_lady: { color: '#4a9aaa', drawFunc: drawWalrusLady },
+            railway_lady: { color: '#1a1a3a', drawFunc: drawRailwayLady },
+            valera: { color: '#4ade4a', drawFunc: drawSecret },      // Секретный!
+            busenka: { color: '#daa520', drawFunc: drawSecret },     // Секретный!
+            evil_vlad: { color: '#00ff00', drawFunc: drawSecret }    // Секретный!
+        };
+
+        // Initialize all canvases
+        Object.keys(characters).forEach(key => {
+            const canvas = document.getElementById('canvas-' + key);
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                animateCharacter(ctx, characters[key].drawFunc, key);
+            }
+        });
+
+        function animateCharacter(ctx, drawFunc, key) {
+            let frame = 0;
+            function animate() {
+                ctx.clearRect(0, 0, 200, 200);
+                drawFunc(ctx, frame);
+                frame++;
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // Drawing functions for each character
+        
+        // Secret character - question mark silhouette
+        function drawSecret(ctx, frame) {
+            ctx.save();
+            ctx.translate(100, 100);
+            
+            // Pulsing dark silhouette
+            const pulse = Math.sin(frame * 0.05) * 0.1 + 0.9;
+            
+            // Mystery aura
+            ctx.fillStyle = `rgba(50, 50, 50, ${0.2 + Math.sin(frame * 0.03) * 0.1})`;
+            ctx.beginPath();
+            ctx.arc(0, 0, 70 * pulse, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Dark silhouette
+            ctx.fillStyle = '#1a1a1a';
+            ctx.beginPath();
+            ctx.ellipse(0, 10, 45 * pulse, 55 * pulse, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Question mark - animated
+            const bounce = Math.sin(frame * 0.08) * 5;
+            ctx.fillStyle = '#444';
+            ctx.shadowColor = '#666';
+            ctx.shadowBlur = 15 + Math.sin(frame * 0.1) * 5;
+            ctx.font = 'bold 70px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('?', 0, bounce);
+            ctx.shadowBlur = 0;
+            
+            // Mysterious sparkles
+            ctx.fillStyle = '#555';
+            for (let i = 0; i < 5; i++) {
+                const angle = (frame * 0.02 + i * Math.PI * 2 / 5);
+                const dist = 55 + Math.sin(frame * 0.05 + i) * 10;
+                const sx = Math.cos(angle) * dist;
+                const sy = Math.sin(angle) * dist;
+                const size = 2 + Math.sin(frame * 0.1 + i * 2) * 1;
+                ctx.beginPath();
+                ctx.arc(sx, sy, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            ctx.restore();
+        }
+        
+        function drawVlad(ctx, frame) {
+            ctx.save();
+            ctx.translate(100, 100);
+            
+            // Body (pajama)
+            ctx.fillStyle = '#a0c0e0';
+            ctx.beginPath();
+            ctx.ellipse(0, 30, 35, 45, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Stars on pajama
+            ctx.fillStyle = '#ffff00';
+            for (let i = 0; i < 5; i++) {
+                const sx = -20 + (i % 3) * 20;
+                const sy = 10 + Math.floor(i / 3) * 25;
+                ctx.beginPath();
+                ctx.arc(sx, sy, 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Head
+            ctx.fillStyle = '#e8c4a0';
+            ctx.beginPath();
+            ctx.ellipse(0, -30, 25, 30, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Nightcap
+            ctx.fillStyle = '#c0392b';
+            ctx.beginPath();
+            ctx.moveTo(-25, -40);
+            ctx.quadraticCurveTo(0, -90, 30, -50 + Math.sin(frame * 0.1) * 5);
+            ctx.lineTo(25, -35);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Pompom
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(30, -50 + Math.sin(frame * 0.1) * 5, 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Eyes
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.ellipse(-8, -35, 6, 7, 0, 0, Math.PI * 2);
+            ctx.ellipse(8, -35, 6, 7, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = '#4a90a4';
+            ctx.beginPath();
+            ctx.arc(-8, -35, 3, 0, Math.PI * 2);
+            ctx.arc(8, -35, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Determined smile
+            ctx.strokeStyle = '#8b4513';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, -25, 10, 0.2, Math.PI - 0.2);
+            ctx.stroke();
+            
+            // Broom
+            ctx.save();
+            ctx.translate(40, 0);
+            ctx.rotate(-0.3 + Math.sin(frame * 0.05) * 0.1);
+            ctx.fillStyle = '#8b4513';
+            ctx.fillRect(-3, -60, 6, 100);
+            ctx.fillStyle = '#d4a520';
+            ctx.beginPath();
+            ctx.moveTo(-15, 40);
+            ctx.lineTo(15, 40);
+            ctx.lineTo(10, 70);
+            ctx.lineTo(-10, 70);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+            
+            ctx.restore();
+        }
+
+        function drawArbuz(ctx, frame) {
+            ctx.save();
+            ctx.translate(100, 100);
+            
+            // Body
+            ctx.fillStyle = '#8B4513';
+            ctx.beginPath();
+            ctx.ellipse(0, 20, 35, 25, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Head
+            ctx.fillStyle = '#8B4513';
+            ctx.beginPath();
+            ctx.ellipse(0, -25, 28, 25, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Ears
+            ctx.beginPath();
+            ctx.ellipse(-22, -40, 10, 18, -0.3, 0, Math.PI * 2);
+            ctx.ellipse(22, -40, 10, 18, 0.3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // White muzzle
+            ctx.fillStyle = '#DEB887';
+            ctx.beginPath();
+            ctx.ellipse(0, -15, 15, 12, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Eyes
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(-10, -30, 5, 0, Math.PI * 2);
+            ctx.arc(10, -30, 5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(-9, -31, 2, 0, Math.PI * 2);
+            ctx.arc(11, -31, 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Nose
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.ellipse(0, -18, 7, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Tongue
+            if (frame % 60 < 30) {
+                ctx.fillStyle = '#ff6b6b';
+                ctx.beginPath();
+                ctx.ellipse(0, -5, 8, 12, 0, 0, Math.PI);
+                ctx.fill();
+            }
+            
+            // Tail wagging
+            ctx.fillStyle = '#8B4513';
+            ctx.save();
+            ctx.translate(-35, 25);
+            ctx.rotate(Math.sin(frame * 0.2) * 0.5);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.quadraticCurveTo(-20, -10, -25, 5);
+            ctx.quadraticCurveTo(-20, 10, 0, 5);
+            ctx.fill();
+            ctx.restore();
+            
+            // Running legs animation
+            const legOffset = Math.sin(frame * 0.15) * 10;
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(-25, 40, 8, 20 + legOffset);
+            ctx.fillRect(-10, 40, 8, 20 - legOffset);
+            ctx.fillRect(5, 40, 8, 20 + legOffset);
+            ctx.fillRect(20, 40, 8, 20 - legOffset);
+            
+            ctx.restore();
+        }
+
+        function drawVika(ctx, frame) {
+            ctx.save();
+            ctx.translate(100, 100);
+            
+            // Aura
+            const auraGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 80);
+            auraGrad.addColorStop(0, 'rgba(155, 89, 182, 0.3)');
+            auraGrad.addColorStop(1, 'rgba(155, 89, 182, 0)');
+            ctx.fillStyle = auraGrad;
+            ctx.beginPath();
+            ctx.arc(0, 0, 80 + Math.sin(frame * 0.05) * 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Serpentine body
+            ctx.fillStyle = '#2d5a27';
+            for (let i = 0; i < 5; i++) {
+                const offset = Math.sin(frame * 0.1 + i * 0.5) * 5;
+                ctx.beginPath();
+                ctx.ellipse(offset, 30 + i * 12, 30 - i * 3, 12, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Head
+            ctx.fillStyle = '#4a8a44';
+            ctx.beginPath();
+            ctx.ellipse(0, -20, 30, 35, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Crown
+            ctx.fillStyle = '#9b59b6';
+            ctx.beginPath();
+            ctx.moveTo(-25, -45);
+            ctx.lineTo(-20, -65);
+            ctx.lineTo(-10, -50);
+            ctx.lineTo(0, -70);
+            ctx.lineTo(10, -50);
+            ctx.lineTo(20, -65);
+            ctx.lineTo(25, -45);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Crown gems
+            ctx.fillStyle = '#ff00ff';
+            ctx.beginPath();
+            ctx.arc(0, -60, 5, 0, Math.PI * 2);
+            ctx.arc(-15, -55, 3, 0, Math.PI * 2);
+            ctx.arc(15, -55, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Evil eyes
+            ctx.fillStyle = '#ff00ff';
+            ctx.shadowColor = '#ff00ff';
+            ctx.shadowBlur = 15;
+            ctx.beginPath();
+            ctx.ellipse(-10, -25, 8, 10, 0, 0, Math.PI * 2);
+            ctx.ellipse(10, -25, 8, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            // Slit pupils
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.ellipse(-10, -25, 2, 8, 0, 0, Math.PI * 2);
+            ctx.ellipse(10, -25, 2, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Forked tongue
+            ctx.fillStyle = '#ff3366';
+            ctx.save();
+            ctx.translate(0, 0);
+            const tongueExt = Math.sin(frame * 0.1) * 5 + 10;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-5, tongueExt);
+            ctx.lineTo(0, tongueExt - 5);
+            ctx.lineTo(5, tongueExt);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+            
+            ctx.restore();
+        }
+
+        function drawPennywise(ctx, frame) {
+            ctx.save();
+            ctx.translate(100, 100);
+            
+            // Ruffled collar
+            ctx.fillStyle = '#ddd';
+            for (let i = 0; i < 12; i++) {
+                const angle = (i / 12) * Math.PI * 2;
+                ctx.beginPath();
+                ctx.ellipse(
+                    Math.cos(angle) * 25, 
+                    15 + Math.sin(angle) * 10,
+                    15, 8, angle, 0, Math.PI * 2
+                );
+                ctx.fill();
+            }
+            
+            // Body
+            ctx.fillStyle = '#888';
+            ctx.beginPath();
+            ctx.ellipse(0, 40, 30, 35, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Face
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.ellipse(0, -25, 30, 35, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Red hair
+            ctx.fillStyle = '#cc0000';
+            for (let i = 0; i < 8; i++) {
+                const angle = -Math.PI + (i / 8) * Math.PI;
+                const wave = Math.sin(frame * 0.1 + i) * 5;
+                ctx.beginPath();
+                ctx.ellipse(
+                    Math.cos(angle) * 30,
+                    -40 + Math.sin(angle) * 15 + wave,
+                    12, 20, angle * 0.3, 0, Math.PI * 2
+                );
+                ctx.fill();
+            }
+            
+            // Red nose
+            ctx.fillStyle = '#cc0000';
+            ctx.beginPath();
+            ctx.arc(0, -20, 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Eyes
+            ctx.fillStyle = '#ffcc00';
+            ctx.beginPath();
+            ctx.ellipse(-12, -35, 8, 10, 0, 0, Math.PI * 2);
+            ctx.ellipse(12, -35, 8, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Eye looking at you
+            const eyeOffset = Math.sin(frame * 0.05) * 3;
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(-12 + eyeOffset, -35, 4, 0, Math.PI * 2);
+            ctx.arc(12 + eyeOffset, -35, 4, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Creepy smile
+            ctx.fillStyle = '#cc0000';
+            ctx.beginPath();
+            ctx.arc(0, -5, 20, 0.1, Math.PI - 0.1);
+            ctx.fill();
+            
+            // Teeth
+            ctx.fillStyle = '#fff';
+            for (let i = 0; i < 8; i++) {
+                ctx.beginPath();
+                ctx.moveTo(-14 + i * 4, -5);
+                ctx.lineTo(-12 + i * 4, 8);
+                ctx.lineTo(-10 + i * 4, -5);
+                ctx.fill();
+            }
+            
+            // Balloon
+            ctx.save();
+            ctx.translate(45, -30 + Math.sin(frame * 0.05) * 10);
+            ctx.fillStyle = '#cc0000';
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 15, 20, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, 20);
+            ctx.lineTo(0, 50);
+            ctx.stroke();
+            ctx.restore();
+            
+            ctx.restore();
+        }
+
+        function drawDeadlights(ctx, frame) {
+            ctx.save();
+            ctx.translate(100, 100);
+            
+            // Dark void background
+            const voidGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 80);
+            voidGrad.addColorStop(0, 'rgba(0, 0, 0, 0.8)');
+            voidGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = voidGrad;
+            ctx.beginPath();
+            ctx.arc(0, 0, 80, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Three deadlights
+            const positions = [
+                { x: 0, y: -30 },
+                { x: -35, y: 20 },
+                { x: 35, y: 20 }
+            ];
+            
+            positions.forEach((pos, i) => {
+                const pulse = Math.sin(frame * 0.1 + i * 2) * 0.3 + 1;
+                const size = 25 * pulse;
+                
+                // Outer glow
+                const glowGrad = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, size * 1.5);
+                glowGrad.addColorStop(0, 'rgba(255, 150, 0, 0.8)');
+                glowGrad.addColorStop(0.5, 'rgba(255, 100, 0, 0.4)');
+                glowGrad.addColorStop(1, 'rgba(255, 50, 0, 0)');
+                ctx.fillStyle = glowGrad;
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, size * 1.5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Core
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, size * 0.3, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            // Hypnotic rays
+            ctx.strokeStyle = 'rgba(255, 150, 0, 0.3)';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 12; i++) {
+                const angle = (i / 12) * Math.PI * 2 + frame * 0.02;
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(Math.cos(angle) * 70, Math.sin(angle) * 70);
+                ctx.stroke();
+            }
+            
+            ctx.restore();
+        }
+
+        function drawVoldemort(ctx, frame) {
+            ctx.save();
+            ctx.translate(100, 100);
+            
+            // Dark robe
+            ctx.fillStyle = '#1a1a1a';
+            ctx.beginPath();
+            ctx.moveTo(-40, -10);
+            ctx.lineTo(-50, 70);
+            ctx.lineTo(50, 70);
+            ctx.lineTo(40, -10);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Pale head
+            ctx.fillStyle = '#d4c4b0';
+            ctx.beginPath();
+            ctx.ellipse(0, -30, 28, 35, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // No nose - just slits
+            ctx.fillStyle = '#2a2a2a';
+            ctx.beginPath();
+            ctx.ellipse(-4, -25, 2, 4, 0, 0, Math.PI * 2);
+            ctx.ellipse(4, -25, 2, 4, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Red eyes
+            ctx.fillStyle = '#ff0000';
+            ctx.shadowColor = '#ff0000';
+            ctx.shadowBlur = 10;
+            ctx.beginPath();
+            ctx.ellipse(-12, -40, 6, 8, 0, 0, Math.PI * 2);
+            ctx.ellipse(12, -40, 6, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            // Slit pupils
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.ellipse(-12, -40, 2, 6, 0, 0, Math.PI * 2);
+            ctx.ellipse(12, -40, 2, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Wand with green spell
+            ctx.save();
+            ctx.translate(35, 10);
+            ctx.rotate(-0.5 + Math.sin(frame * 0.05) * 0.1);
+            ctx.fillStyle = '#3a2a1a';
+            ctx.fillRect(-2, -30, 4, 50);
+            
+            // Green spell
+            ctx.fillStyle = '#00ff00';
+            ctx.shadowColor = '#00ff00';
+            ctx.shadowBlur = 20;
+            ctx.beginPath();
+            ctx.arc(0, -35, 8 + Math.sin(frame * 0.2) * 3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.restore();
+            
+            ctx.restore();
+        }
+
+        function drawHumus(ctx, frame) {
+            ctx.save();
+            ctx.translate(100, 100);
+            
+            // Running pose body
+            ctx.fillStyle = '#cc3333';
+            ctx.beginPath();
+            ctx.ellipse(0, 20, 25, 35, 0.2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Head
+            ctx.fillStyle = '#e8c4a0';
+            ctx.beginPath();
+            ctx.ellipse(0, -30, 22, 25, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Headband
+            ctx.fillStyle = '#ff0000';
+            ctx.fillRect(-25, -45, 50, 8);
+            
+            // Crazy eyes
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.ellipse(-8, -35, 8, 9, 0, 0, Math.PI * 2);
+            ctx.ellipse(8, -35, 8, 9, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Bloodshot
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 3; i++) {
+                ctx.beginPath();
+                ctx.moveTo(-8, -35);
+                ctx.lineTo(-8 + Math.cos(i) * 6, -35 + Math.sin(i) * 6);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(8, -35);
+                ctx.lineTo(8 + Math.cos(i + 1) * 6, -35 + Math.sin(i + 1) * 6);
+                ctx.stroke();
+            }
+            
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(-8, -35, 3, 0, Math.PI * 2);
+            ctx.arc(8, -35, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Maniacal grin
+            ctx.fillStyle = '#300';
+            ctx.beginPath();
+            ctx.arc(0, -18, 12, 0, Math.PI);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            for (let i = 0; i < 6; i++) {
+                ctx.fillRect(-10 + i * 4, -18, 3, 6);
+            }
+            
+            // Smoothie cup
+            ctx.save();
+            ctx.translate(-35, 0);
+            ctx.fillStyle = '#444';
+            ctx.fillRect(-8, -15, 16, 30);
+            ctx.fillStyle = '#cc3333';
+            ctx.fillRect(-6, -10, 12, 20);
+            // Bubbles
+            ctx.fillStyle = '#ff6666';
+            ctx.beginPath();
+            ctx.arc(-2, -5 + Math.sin(frame * 0.2) * 3, 3, 0, Math.PI * 2);
+            ctx.arc(2, 0 + Math.sin(frame * 0.2 + 1) * 3, 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+            
+            // Running legs
+            const legAngle = Math.sin(frame * 0.15) * 0.5;
+            ctx.fillStyle = '#1a1a1a';
+            ctx.save();
+            ctx.translate(-10, 50);
+            ctx.rotate(legAngle);
+            ctx.fillRect(-4, 0, 8, 35);
+            ctx.restore();
+            ctx.save();
+            ctx.translate(10, 50);
+            ctx.rotate(-legAngle);
+            ctx.fillRect(-4, 0, 8, 35);
+            ctx.restore();
+            
+            ctx.restore();
+        }
+
+        function drawAlexey(ctx, frame) {
+            ctx.save();
+            ctx.translate(100, 100);
+            
+            // Suit
+            ctx.fillStyle = '#1a3a6a';
+            ctx.beginPath();
+            ctx.moveTo(-30, 0);
+            ctx.lineTo(-35, 70);
+            ctx.lineTo(35, 70);
+            ctx.lineTo(30, 0);
+            ctx.closePath();
+            ctx.fill();
+            
+            // White shirt
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.moveTo(-10, 5);
+            ctx.lineTo(-12, 60);
+            ctx.lineTo(12, 60);
+            ctx.lineTo(10, 5);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Tie
+            ctx.fillStyle = '#cc0000';
+            ctx.beginPath();
+            ctx.moveTo(0, 5);
+            ctx.lineTo(-6, 15);
+            ctx.lineTo(0, 50);
+            ctx.lineTo(6, 15);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Head
+            ctx.fillStyle = '#e8c4a0';
+            ctx.beginPath();
+            ctx.ellipse(0, -25, 22, 28, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Slick hair
+            ctx.fillStyle = '#2a2a2a';
+            ctx.beginPath();
+            ctx.moveTo(-22, -40);
+            ctx.quadraticCurveTo(-25, -55, 0, -58);
+            ctx.quadraticCurveTo(25, -55, 22, -40);
+            ctx.quadraticCurveTo(0, -45, -22, -40);
+            ctx.fill();
+            
+            // Shady eyes
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.ellipse(-8, -28, 6, 7, 0, 0, Math.PI * 2);
+            ctx.ellipse(8, -28, 6, 7, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(-8, -28, 3, 0, Math.PI * 2);
+            ctx.arc(8, -28, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Sleazy smile
+            ctx.strokeStyle = '#8b4513';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, -15, 10, 0.1, Math.PI - 0.1);
+            ctx.stroke();
+            
+            // Suitcase with flames
+            ctx.save();
+            ctx.translate(40, 30);
+            ctx.rotate(Math.sin(frame * 0.05) * 0.1);
+            ctx.fillStyle = '#4a3a2a';
+            ctx.fillRect(-15, -20, 30, 40);
+            ctx.fillStyle = '#ffd700';
+            ctx.fillRect(-12, -17, 24, 34);
+            // Flames
+            ctx.fillStyle = '#ff6600';
+            for (let i = 0; i < 3; i++) {
+                const fy = -25 - Math.sin(frame * 0.2 + i) * 5;
+                ctx.beginPath();
+                ctx.moveTo(-8 + i * 8, -17);
+                ctx.quadraticCurveTo(-6 + i * 8, fy, -4 + i * 8, -17);
+                ctx.fill();
+            }
+            ctx.restore();
+            
+            ctx.restore();
+        }
+
+        function drawValera(ctx, frame) {
+            ctx.save();
+            ctx.translate(100, 100);
+            
+            // Heroic aura
+            const auraGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 70);
+            auraGrad.addColorStop(0, 'rgba(74, 222, 74, 0.2)');
+            auraGrad.addColorStop(1, 'rgba(74, 222, 74, 0)');
+            ctx.fillStyle = auraGrad;
+            ctx.beginPath();
+            ctx.arc(0, 0, 70 + Math.sin(frame * 0.03) * 5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Body - plaid shirt
+            ctx.fillStyle = '#4a6a8a';
+            ctx.beginPath();
+            ctx.moveTo(-25, -5);
+            ctx.lineTo(-30, 60);
+            ctx.lineTo(30, 60);
+            ctx.lineTo(25, -5);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Plaid pattern
+            ctx.strokeStyle = '#3a5a7a';
+            ctx.lineWidth = 3;
+            for (let i = -20; i < 25; i += 10) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i - 5, 55);
+                ctx.stroke();
+            }
+            
+            // Head - bald with side hair
+            ctx.fillStyle = '#e8c4a0';
+            ctx.beginPath();
+            ctx.ellipse(0, -30, 25, 28, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Bald top
+            ctx.fillStyle = '#d4b090';
+            ctx.beginPath();
+            ctx.ellipse(0, -40, 18, 12, 0, Math.PI, 0);
+            ctx.fill();
+            
+            // Side hair
+            ctx.fillStyle = '#6a4a2a';
+            ctx.beginPath();
+            ctx.ellipse(-20, -25, 8, 15, 0.2, 0, Math.PI * 2);
+            ctx.ellipse(20, -25, 8, 15, -0.2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Glasses
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(-10, -30, 10, 0, Math.PI * 2);
+            ctx.arc(10, -30, 10, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(0, -30);
+            ctx.lineTo(-1, -30);
+            ctx.stroke();
+            
+            // Mustache
+            ctx.fillStyle = '#5a3a1a';
+            ctx.beginPath();
+            ctx.ellipse(-8, -18, 12, 5, 0, 0, Math.PI);
+            ctx.ellipse(8, -18, 12, 5, 0, 0, Math.PI);
+            ctx.fill();
+            
+            // Eyes behind glasses
+            ctx.fillStyle = '#4a6a4a';
+            ctx.beginPath();
+            ctx.arc(-10, -32, 3, 0, Math.PI * 2);
+            ctx.arc(10, -32, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Broom in hand
+            ctx.save();
+            ctx.translate(35, 10);
+            ctx.rotate(Math.sin(frame * 0.05) * 0.1);
+            ctx.fillStyle = '#8b4513';
+            ctx.fillRect(-3, -50, 6, 80);
+            ctx.fillStyle = '#d4a520';
+            ctx.beginPath();
+            ctx.moveTo(-15, 25);
+            ctx.lineTo(15, 25);
+            ctx.lineTo(10, 45);
+            ctx.lineTo(-10, 45);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+            
+            ctx.restore();
+        }
+
+        function drawBusenka(ctx, frame) {
+            ctx.save();
+            ctx.translate(100, 100);
+            
+            // Happy aura
+            const auraGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 60);
+            auraGrad.addColorStop(0, 'rgba(218, 165, 32, 0.2)');
+            auraGrad.addColorStop(1, 'rgba(218, 165, 32, 0)');
+            ctx.fillStyle = auraGrad;
+            ctx.beginPath();
+            ctx.arc(0, 0, 60, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Corgi body
+            ctx.fillStyle = '#daa520';
+            ctx.beginPath();
+            ctx.ellipse(0, 20, 35, 25, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // White belly
+            ctx.fillStyle = '#fff8e7';
+            ctx.beginPath();
+            ctx.ellipse(0, 30, 25, 15, 0, 0, Math.PI);
+            ctx.fill();
+            
+            // Short corgi legs
+            const legOffset = Math.sin(frame * 0.15) * 5;
+            ctx.fillStyle = '#daa520';
+            ctx.fillRect(-25, 40, 10, 15 + legOffset);
+            ctx.fillRect(-8, 40, 10, 15 - legOffset);
+            ctx.fillRect(8, 40, 10, 15 + legOffset);
+            ctx.fillRect(22, 40, 10, 15 - legOffset);
+            
+            // Head
+            ctx.fillStyle = '#daa520';
+            ctx.beginPath();
+            ctx.ellipse(0, -15, 28, 25, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Big corgi ears
+            ctx.beginPath();
+            ctx.moveTo(-20, -30);
+            ctx.lineTo(-30, -55);
+            ctx.lineTo(-10, -35);
+            ctx.closePath();
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(20, -30);
+            ctx.lineTo(30, -55);
+            ctx.lineTo(10, -35);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Pink inner ears
+            ctx.fillStyle = '#ffb6c1';
+            ctx.beginPath();
+            ctx.moveTo(-18, -32);
+            ctx.lineTo(-25, -48);
+            ctx.lineTo(-12, -35);
+            ctx.closePath();
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(18, -32);
+            ctx.lineTo(25, -48);
+            ctx.lineTo(12, -35);
+            ctx.closePath();
+            ctx.fill();
+            
+            // White face marking
+            ctx.fillStyle = '#fff8e7';
+            ctx.beginPath();
+            ctx.ellipse(0, -8, 15, 18, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Eyes - big and happy
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(-10, -18, 6, 0, Math.PI * 2);
+            ctx.arc(10, -18, 6, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(-8, -20, 2, 0, Math.PI * 2);
+            ctx.arc(12, -20, 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Nose
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.ellipse(0, -5, 6, 4, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Happy tongue
+            if (frame % 40 < 25) {
+                ctx.fillStyle = '#ff6b6b';
+                ctx.beginPath();
+                ctx.ellipse(0, 8, 8, 12, 0, 0, Math.PI);
+                ctx.fill();
+            }
+            
+            // Wagging tail (very fast for corgi!)
+            ctx.fillStyle = '#daa520';
+            ctx.save();
+            ctx.translate(0, 35);
+            ctx.rotate(Math.sin(frame * 0.3) * 0.8);
+            ctx.beginPath();
+            ctx.ellipse(-5, -10, 8, 5, 0.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+            
+            ctx.restore();
+        }
+
+        function drawEvilVlad(ctx, frame) {
+            ctx.save();
+            ctx.translate(100, 100);
+            
+            // Evil green aura
+            const auraGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 80);
+            auraGrad.addColorStop(0, 'rgba(0, 255, 0, 0.3)');
+            auraGrad.addColorStop(1, 'rgba(0, 255, 0, 0)');
+            ctx.fillStyle = auraGrad;
+            ctx.beginPath();
+            ctx.arc(0, 0, 80 + Math.sin(frame * 0.05) * 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Dark cape
+            ctx.fillStyle = '#0a0a15';
+            ctx.beginPath();
+            ctx.moveTo(-35, -20);
+            ctx.quadraticCurveTo(-50, 30, -40, 70);
+            ctx.lineTo(40, 70);
+            ctx.quadraticCurveTo(50, 30, 35, -20);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Cape collar
+            ctx.fillStyle = '#1a1a2a';
+            ctx.beginPath();
+            ctx.moveTo(-30, -15);
+            ctx.lineTo(-40, 10);
+            ctx.lineTo(-20, 5);
+            ctx.closePath();
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(30, -15);
+            ctx.lineTo(40, 10);
+            ctx.lineTo(20, 5);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Body - dark
+            ctx.fillStyle = '#1a1a2a';
+            ctx.beginPath();
+            ctx.moveTo(-20, -5);
+            ctx.lineTo(-22, 50);
+            ctx.lineTo(22, 50);
+            ctx.lineTo(20, -5);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Head
+            ctx.fillStyle = '#c8a882';
+            ctx.beginPath();
+            ctx.ellipse(0, -30, 22, 25, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Dark hair
+            ctx.fillStyle = '#1a1a1a';
+            ctx.beginPath();
+            ctx.ellipse(0, -48, 20, 12, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // GLOWING GREEN EYES
+            ctx.fillStyle = '#00ff00';
+            ctx.shadowColor = '#00ff00';
+            ctx.shadowBlur = 20;
+            ctx.beginPath();
+            ctx.ellipse(-8, -32, 6, 8, 0, 0, Math.PI * 2);
+            ctx.ellipse(8, -32, 6, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            // Slit pupils
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.ellipse(-8, -32, 2, 6, 0, 0, Math.PI * 2);
+            ctx.ellipse(8, -32, 2, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Evil grin
+            ctx.strokeStyle = '#00ff00';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, -20, 12, 0.2, Math.PI - 0.2);
+            ctx.stroke();
+            
+            // Crown of snakes
+            ctx.fillStyle = '#2d5a27';
+            for (let i = 0; i < 5; i++) {
+                const angle = -Math.PI/2 + (i - 2) * 0.4;
+                const sx = Math.cos(angle) * 25;
+                const sy = -50 + Math.sin(angle) * 10 + Math.sin(frame * 0.1 + i) * 3;
+                ctx.beginPath();
+                ctx.ellipse(sx, sy, 4, 8, angle, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Snake eyes on crown
+            ctx.fillStyle = '#ffff00';
+            for (let i = 0; i < 5; i++) {
+                const angle = -Math.PI/2 + (i - 2) * 0.4;
+                const sx = Math.cos(angle) * 25;
+                const sy = -55 + Math.sin(angle) * 10 + Math.sin(frame * 0.1 + i) * 3;
+                ctx.beginPath();
+                ctx.arc(sx, sy, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Floating "247" number
+            ctx.fillStyle = '#00ff00';
+            ctx.shadowColor = '#00ff00';
+            ctx.shadowBlur = 10;
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            const floatY = Math.sin(frame * 0.05) * 5;
+            ctx.fillText('247', 0, -70 + floatY);
+            ctx.shadowBlur = 0;
+            
+            ctx.restore();
+        }
+
+        function drawChurch(ctx, frame) {
+            ctx.save();
+            ctx.translate(100, 100);
+            
+            // Dirt particles
+            ctx.fillStyle = 'rgba(60, 40, 20, 0.6)';
+            for (let i = 0; i < 8; i++) {
+                const px = Math.sin(frame * 0.05 + i * 2) * 40;
+                const py = Math.cos(frame * 0.03 + i) * 30;
+                ctx.beginPath();
+                ctx.arc(px, py, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Body - zombie cat
+            ctx.fillStyle = '#505050';
+            ctx.beginPath();
+            ctx.ellipse(0, 20, 30, 25, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Patches of missing fur
+            ctx.fillStyle = '#303030';
+            ctx.beginPath();
+            ctx.ellipse(-15, 15, 8, 6, 0.3, 0, Math.PI * 2);
+            ctx.ellipse(10, 25, 10, 5, -0.2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Head
+            ctx.fillStyle = '#505050';
+            ctx.beginPath();
+            ctx.ellipse(0, -20, 25, 22, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Ears - one torn
+            ctx.beginPath();
+            ctx.moveTo(-18, -35);
+            ctx.lineTo(-25, -55);
+            ctx.lineTo(-10, -40);
+            ctx.fill();
+            // Torn ear
+            ctx.beginPath();
+            ctx.moveTo(18, -35);
+            ctx.lineTo(22, -50);
+            ctx.lineTo(25, -48);
+            ctx.lineTo(20, -55);
+            ctx.lineTo(10, -40);
+            ctx.fill();
+            
+            // Glowing yellow eyes
+            ctx.fillStyle = '#ffff00';
+            ctx.shadowColor = '#ffff00';
+            ctx.shadowBlur = 15;
+            ctx.beginPath();
+            ctx.ellipse(-8, -22, 6, 8, 0, 0, Math.PI * 2);
+            ctx.ellipse(8, -22, 6, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            // Slit pupils
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.ellipse(-8, -22, 2, 6, 0, 0, Math.PI * 2);
+            ctx.ellipse(8, -22, 2, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Creepy smile
+            ctx.strokeStyle = '#300';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, -10, 10, 0.2, Math.PI - 0.2);
+            ctx.stroke();
+            
+            // Tail swaying
+            ctx.fillStyle = '#505050';
+            ctx.save();
+            ctx.translate(25, 30);
+            ctx.rotate(Math.sin(frame * 0.08) * 0.3);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.quadraticCurveTo(20, -20, 35, -10);
+            ctx.quadraticCurveTo(20, -15, 5, 5);
+            ctx.fill();
+            ctx.restore();
+            
+            ctx.restore();
+        }
+
+        function drawSauron(ctx, frame) {
+            ctx.save();
+            ctx.translate(100, 100);
+            
+            // Dark tower silhouette
+            ctx.fillStyle = '#1a0505';
+            ctx.beginPath();
+            ctx.moveTo(-20, 70);
+            ctx.lineTo(-15, -40);
+            ctx.lineTo(-5, -50);
+            ctx.lineTo(0, -55);
+            ctx.lineTo(5, -50);
+            ctx.lineTo(15, -40);
+            ctx.lineTo(20, 70);
+            ctx.closePath();
+            ctx.fill();
+            
+            // The Eye - outer
+            ctx.fillStyle = '#ff4400';
+            ctx.shadowColor = '#ff4400';
+            ctx.shadowBlur = 30;
+            ctx.beginPath();
+            ctx.ellipse(0, -10, 35, 50, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Eye - inner glow
+            ctx.fillStyle = '#ffcc00';
+            ctx.beginPath();
+            ctx.ellipse(0, -10, 25, 35, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Slit pupil
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.ellipse(0, -10, 5, 40, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            // Flames around eye
+            ctx.fillStyle = '#ff6600';
+            for (let i = 0; i < 12; i++) {
+                const angle = (i / 12) * Math.PI * 2 + frame * 0.05;
+                const dist = 40 + Math.sin(frame * 0.1 + i) * 5;
+                ctx.beginPath();
+                ctx.moveTo(Math.cos(angle) * 30, -10 + Math.sin(angle) * 40);
+                ctx.lineTo(Math.cos(angle) * dist, -10 + Math.sin(angle) * (dist + 10));
+                ctx.lineTo(Math.cos(angle + 0.2) * 30, -10 + Math.sin(angle + 0.2) * 40);
+                ctx.fill();
+            }
+            
+            ctx.restore();
+        }
+
+        function drawFreddy(ctx, frame) {
+            ctx.save();
+            ctx.translate(100, 100);
+            
+            // Striped sweater
+            ctx.fillStyle = '#006600';
+            ctx.beginPath();
+            ctx.ellipse(0, 30, 35, 40, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Red stripes
+            ctx.fillStyle = '#cc0000';
+            for (let i = 0; i < 5; i++) {
+                ctx.fillRect(-35, 5 + i * 15, 70, 6);
+            }
+            
+            // Burned face
+            ctx.fillStyle = '#8b4513';
+            ctx.beginPath();
+            ctx.ellipse(0, -25, 25, 28, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Burn scars
+            ctx.fillStyle = '#5a2a0a';
+            ctx.beginPath();
+            ctx.ellipse(-10, -30, 8, 12, -0.3, 0, Math.PI * 2);
+            ctx.ellipse(12, -20, 10, 8, 0.2, 0, Math.PI * 2);
+            ctx.ellipse(-5, -15, 6, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Fedora hat
+            ctx.fillStyle = '#3a2a1a';
+            ctx.beginPath();
+            ctx.ellipse(0, -50, 30, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillRect(-18, -65, 36, 18);
+            ctx.beginPath();
+            ctx.ellipse(0, -65, 18, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Evil eyes
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.ellipse(-8, -30, 5, 6, 0, 0, Math.PI * 2);
+            ctx.ellipse(8, -30, 5, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#cc0000';
+            ctx.beginPath();
+            ctx.arc(-8, -30, 2.5, 0, Math.PI * 2);
+            ctx.arc(8, -30, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Evil grin
+            ctx.fillStyle = '#300';
+            ctx.beginPath();
+            ctx.arc(0, -15, 12, 0.1, Math.PI - 0.1);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            for (let i = 0; i < 6; i++) {
+                ctx.fillRect(-10 + i * 4, -15, 2, 5);
+            }
+            
+            // GLOVE WITH BLADES
+            ctx.save();
+            ctx.translate(45, 10);
+            ctx.rotate(Math.sin(frame * 0.1) * 0.2);
+            // Glove
+            ctx.fillStyle = '#8b4513';
+            ctx.fillRect(-8, -5, 16, 25);
+            // Blades
+            ctx.fillStyle = '#c0c0c0';
+            for (let b = 0; b < 4; b++) {
+                ctx.beginPath();
+                ctx.moveTo(-6 + b * 4, -5);
+                ctx.lineTo(-5 + b * 4, -35 - Math.sin(frame * 0.15 + b) * 5);
+                ctx.lineTo(-3 + b * 4, -5);
+                ctx.fill();
+            }
+            ctx.restore();
+            
+            ctx.restore();
+        }
+
+        function drawBalrog(ctx, frame) {
+            ctx.save();
+            ctx.translate(100, 100);
+            
+            // Fire aura
+            const auraGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 80);
+            auraGrad.addColorStop(0, 'rgba(255, 100, 0, 0.4)');
+            auraGrad.addColorStop(1, 'rgba(255, 50, 0, 0)');
+            ctx.fillStyle = auraGrad;
+            ctx.beginPath();
+            ctx.arc(0, 0, 80, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Shadow wings
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.beginPath();
+            ctx.moveTo(-25, -10);
+            ctx.quadraticCurveTo(-70, -50, -60, 20);
+            ctx.quadraticCurveTo(-40, 0, -25, 10);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(25, -10);
+            ctx.quadraticCurveTo(70, -50, 60, 20);
+            ctx.quadraticCurveTo(40, 0, 25, 10);
+            ctx.fill();
+            
+            // Dark body
+            ctx.fillStyle = '#1a0505';
+            ctx.beginPath();
+            ctx.ellipse(0, 20, 30, 40, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Molten cracks
+            ctx.strokeStyle = '#ff6600';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 4; i++) {
+                ctx.beginPath();
+                ctx.moveTo(-15 + i * 10, 0);
+                ctx.lineTo(-12 + i * 10, 20 + Math.sin(frame * 0.1 + i) * 5);
+                ctx.lineTo(-10 + i * 10, 40);
+                ctx.stroke();
+            }
+            
+            // Head with horns
+            ctx.fillStyle = '#1a0505';
+            ctx.beginPath();
+            ctx.ellipse(0, -25, 22, 25, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Horns
+            ctx.fillStyle = '#0a0000';
+            ctx.beginPath();
+            ctx.moveTo(-15, -40);
+            ctx.quadraticCurveTo(-30, -70, -20, -75);
+            ctx.lineTo(-10, -50);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(15, -40);
+            ctx.quadraticCurveTo(30, -70, 20, -75);
+            ctx.lineTo(10, -50);
+            ctx.fill();
+            
+            // Fiery eyes
+            ctx.fillStyle = '#ffcc00';
+            ctx.shadowColor = '#ff6600';
+            ctx.shadowBlur = 15;
+            ctx.beginPath();
+            ctx.ellipse(-8, -28, 6, 8, 0, 0, Math.PI * 2);
+            ctx.ellipse(8, -28, 6, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            ctx.fillStyle = '#ff0000';
+            ctx.beginPath();
+            ctx.ellipse(-8, -28, 2, 6, 0, 0, Math.PI * 2);
+            ctx.ellipse(8, -28, 2, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Fire whip
+            ctx.strokeStyle = '#ff6600';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(35, 20);
+            for (let i = 0; i < 6; i++) {
+                const wx = 40 + i * 8;
+                const wy = 20 + Math.sin(frame * 0.2 + i) * 15;
+                ctx.lineTo(wx, wy);
+            }
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+
+        function drawPhantom(ctx, frame) {
+            ctx.save();
+            ctx.translate(100, 100);
+            
+            // Cape
+            ctx.fillStyle = '#1a1a1a';
+            ctx.beginPath();
+            ctx.moveTo(-35, -10);
+            ctx.quadraticCurveTo(-45, 30, -40, 70);
+            ctx.lineTo(40, 70);
+            ctx.quadraticCurveTo(45, 30, 35, -10);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Red lining
+            ctx.fillStyle = '#8b0000';
+            ctx.beginPath();
+            ctx.moveTo(-32, -5);
+            ctx.quadraticCurveTo(-38, 25, -35, 65);
+            ctx.lineTo(-28, 60);
+            ctx.quadraticCurveTo(-30, 25, -25, -5);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Suit
+            ctx.fillStyle = '#0a0a0a';
+            ctx.beginPath();
+            ctx.moveTo(-20, 5);
+            ctx.lineTo(-22, 55);
+            ctx.lineTo(22, 55);
+            ctx.lineTo(20, 5);
+            ctx.closePath();
+            ctx.fill();
+            
+            // White shirt
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.moveTo(-6, 8);
+            ctx.lineTo(-7, 50);
+            ctx.lineTo(7, 50);
+            ctx.lineTo(6, 8);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Head
+            ctx.fillStyle = '#d4a574';
+            ctx.beginPath();
+            ctx.ellipse(0, -25, 18, 22, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // THE MASK
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.ellipse(6, -25, 13, 18, 0.1, -Math.PI/2, Math.PI/2);
+            ctx.fill();
+            
+            // Normal eye
+            ctx.fillStyle = '#3a6a3a';
+            ctx.beginPath();
+            ctx.arc(-7, -27, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Masked eye hole
+            ctx.fillStyle = '#ffcc00';
+            ctx.beginPath();
+            ctx.arc(7, -27, 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Hair
+            ctx.fillStyle = '#1a1a1a';
+            ctx.beginPath();
+            ctx.moveTo(-15, -42);
+            ctx.quadraticCurveTo(0, -52, 15, -42);
+            ctx.quadraticCurveTo(0, -46, -15, -42);
+            ctx.fill();
+            
+            // Rose
+            ctx.save();
+            ctx.translate(30, 20 + Math.sin(frame * 0.05) * 3);
+            ctx.fillStyle = '#cc0000';
+            ctx.beginPath();
+            ctx.arc(0, 0, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#228b22';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, 8);
+            ctx.lineTo(0, 30);
+            ctx.stroke();
+            ctx.restore();
+            
+            ctx.restore();
+        }
+
+        
+        // Draw Railway Lady
+        function drawRailwayLady(ctx, frame) {
+            ctx.save();
+            ctx.translate(100, 100);
+            
+            // Body
+            ctx.fillStyle = '#1a1a3a';
+            ctx.beginPath();
+            ctx.ellipse(0, 25, 35, 50, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // White shirt
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.moveTo(-20, -10);
+            ctx.lineTo(0, 5);
+            ctx.lineTo(20, -10);
+            ctx.lineTo(15, -25);
+            ctx.lineTo(-15, -25);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Red bow
+            ctx.fillStyle = '#cc0000';
+            ctx.beginPath();
+            ctx.moveTo(-10, -15);
+            ctx.lineTo(0, -10);
+            ctx.lineTo(10, -15);
+            ctx.lineTo(10, -8);
+            ctx.lineTo(0, -5);
+            ctx.lineTo(-10, -8);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Head
+            ctx.fillStyle = '#ffccaa';
+            ctx.beginPath();
+            ctx.ellipse(0, -35, 25, 28, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Hair
+            ctx.fillStyle = '#daa520';
+            ctx.beginPath();
+            ctx.ellipse(0, -55, 28, 15, 0, Math.PI, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(-25, -35, 8, 20, 0.3, 0, Math.PI * 2);
+            ctx.ellipse(25, -35, 8, 20, -0.3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Cap
+            ctx.fillStyle = '#1a1a3a';
+            ctx.beginPath();
+            ctx.ellipse(0, -62, 30, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillRect(-28, -75, 56, 15);
+            
+            // Cap emblem
+            ctx.fillStyle = '#cc0000';
+            ctx.beginPath();
+            ctx.arc(0, -67, 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Glowing eyes
+            ctx.fillStyle = '#ff0000';
+            ctx.shadowColor = '#ff0000';
+            ctx.shadowBlur = 10 + Math.sin(frame * 0.1) * 5;
+            ctx.beginPath();
+            ctx.ellipse(-10, -38, 5, 5, 0, 0, Math.PI * 2);
+            ctx.ellipse(10, -38, 5, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            // Smile
+            ctx.strokeStyle = '#cc0000';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, -28, 12, 0.2, Math.PI - 0.2);
+            ctx.stroke();
+            
+            // Floating tickets
+            ctx.fillStyle = '#ffeecc';
+            for (let i = 0; i < 3; i++) {
+                const tx = Math.sin(frame * 0.03 + i * 2) * 60;
+                const ty = Math.cos(frame * 0.025 + i * 1.5) * 50;
+                ctx.save();
+                ctx.translate(tx, ty);
+                ctx.rotate(frame * 0.02 + i);
+                ctx.fillRect(-10, -5, 20, 10);
+                ctx.restore();
+            }
+            
+            ctx.restore();
+        }
+
+        function drawWalrusLady(ctx, frame) {
+            ctx.save();
+            ctx.translate(100, 100);
+            
+            // Ледяная аура
+            const auraGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 70);
+            auraGrad.addColorStop(0, 'rgba(100, 200, 255, 0.3)');
+            auraGrad.addColorStop(1, 'rgba(100, 200, 255, 0)');
+            ctx.fillStyle = auraGrad;
+            ctx.beginPath();
+            ctx.arc(0, 0, 70, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Кубики льда
+            for (let i = 0; i < 5; i++) {
+                const ix = Math.sin(frame * 0.03 + i * 1.5) * 55;
+                const iy = Math.cos(frame * 0.02 + i) * 45;
+                ctx.save();
+                ctx.translate(ix, iy);
+                ctx.rotate(frame * 0.02 + i);
+                ctx.fillStyle = 'rgba(200, 240, 255, 0.6)';
+                ctx.fillRect(-5, -5, 10, 10);
+                ctx.restore();
+            }
+            
+            // Тело в купальнике
+            ctx.fillStyle = '#ff6699';
+            ctx.beginPath();
+            ctx.ellipse(0, 15, 28, 35, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Полоски
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3;
+            for (let i = -2; i <= 2; i++) {
+                ctx.beginPath();
+                ctx.moveTo(-22, 10 + i * 10);
+                ctx.lineTo(22, 10 + i * 10);
+                ctx.stroke();
+            }
+            
+            // Полотенце
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.moveTo(-30, -10);
+            ctx.lineTo(-25, 35);
+            ctx.lineTo(-18, 35);
+            ctx.lineTo(-22, -5);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(30, -10);
+            ctx.lineTo(25, 35);
+            ctx.lineTo(18, 35);
+            ctx.lineTo(22, -5);
+            ctx.fill();
+            
+            // Голова (голубоватая)
+            ctx.fillStyle = '#b8d0e8';
+            ctx.beginPath();
+            ctx.ellipse(0, -25, 18, 22, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Румянец
+            ctx.fillStyle = 'rgba(255, 100, 100, 0.5)';
+            ctx.beginPath();
+            ctx.ellipse(-12, -20, 6, 4, 0, 0, Math.PI * 2);
+            ctx.ellipse(12, -20, 6, 4, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Шапочка для плавания
+            ctx.fillStyle = '#ff6699';
+            ctx.beginPath();
+            ctx.ellipse(0, -42, 20, 12, 0, Math.PI, Math.PI * 2);
+            ctx.fill();
+            
+            // Кружочки на шапочке
+            ctx.fillStyle = '#ffffff';
+            for (let i = 0; i < 5; i++) {
+                const angle = Math.PI + (i / 4) * Math.PI;
+                ctx.beginPath();
+                ctx.arc(Math.cos(angle) * 14, -42 + Math.sin(angle) * 8, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Глаза
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.ellipse(-7, -27, 5, 6, 0, 0, Math.PI * 2);
+            ctx.ellipse(7, -27, 5, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = '#4a9aaa';
+            ctx.beginPath();
+            ctx.arc(-7, -27, 3, 0, Math.PI * 2);
+            ctx.arc(7, -27, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(-7, -27, 1.5, 0, Math.PI * 2);
+            ctx.arc(7, -27, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Улыбка
+            ctx.strokeStyle = '#4a8090';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, -15, 8, 0.2, Math.PI - 0.2);
+            ctx.stroke();
+            
+            // Ведро с водой
+            ctx.save();
+            ctx.translate(35, 10);
+            ctx.rotate(Math.sin(frame * 0.04) * 0.1);
+            ctx.fillStyle = '#4a6a8a';
+            ctx.beginPath();
+            ctx.moveTo(-8, -5);
+            ctx.lineTo(-6, 15);
+            ctx.lineTo(10, 15);
+            ctx.lineTo(8, -5);
+            ctx.fill();
+            ctx.fillStyle = '#80d0ff';
+            ctx.beginPath();
+            ctx.ellipse(2, 0, 7, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+            
+            // Капли воды падают
+            ctx.fillStyle = '#80d0ff';
+            for (let i = 0; i < 3; i++) {
+                const dropY = ((frame * 2 + i * 30) % 60) - 20;
+                ctx.beginPath();
+                ctx.ellipse(-20 + i * 15, dropY, 2, 4, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            ctx.restore();
+        }
+
+        // ===== PHOTO/ANIMATION TOGGLE =====
+        const TOGGLE_INTERVAL = 4000; // 4 seconds
+        
+        function setupPhotoToggle() {
+            const cards = document.querySelectorAll('.character-card:not(.secret)');
+            
+            cards.forEach(card => {
+                const character = card.dataset.character;
+                const canvas = document.getElementById('canvas-' + character);
+                const photo = document.getElementById('photo-' + character);
+                
+                if (!photo || !canvas) return;
+                
+                let showingPhoto = false;
+                
+                setInterval(() => {
+                    if (photo.complete && photo.naturalWidth > 0) {
+                        showingPhoto = !showingPhoto;
+                        
+                        if (showingPhoto) {
+                            canvas.style.opacity = '0';
+                            photo.classList.remove('hidden');
+                        } else {
+                            canvas.style.opacity = '1';
+                            photo.classList.add('hidden');
+                        }
+                    }
+                }, TOGGLE_INTERVAL);
+            });
+        }
+        
+        // Initialize after a short delay
+        setTimeout(setupPhotoToggle, 1000);
+
+        // ===== AMBIENT HORROR MUSIC =====
+        const LandingAudio = {
+            ctx: null,
+            musicGain: null,
+            isPlaying: false,
+            timerID: null,
+            nextNoteTime: 0,
+            beatCount: 0,
+            
+            init() {
+                try {
+                    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                    this.musicGain = this.ctx.createGain();
+                    this.musicGain.gain.value = 0.15; // Quiet ambient
+                    this.musicGain.connect(this.ctx.destination);
+                } catch(e) { console.warn('Audio init failed'); }
+            },
+            
+            start() {
+                if (!this.ctx) this.init();
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+                if (this.isPlaying) return;
+                
+                this.isPlaying = true;
+                this.beatCount = 0;
+                this.nextNoteTime = this.ctx.currentTime + 0.1;
+                this.schedule();
+            },
+            
+            stop() {
+                this.isPlaying = false;
+                if (this.timerID) clearTimeout(this.timerID);
+            },
+            
+            schedule() {
+                if (!this.isPlaying || !this.ctx) return;
+                
+                while (this.nextNoteTime < this.ctx.currentTime + 0.1) {
+                    this.playBeat(this.nextNoteTime, this.beatCount);
+                    this.nextNoteTime += 0.25; // Slow tempo
+                    this.beatCount++;
+                }
+                
+                this.timerID = setTimeout(() => this.schedule(), 50);
+            },
+            
+            playBeat(time, beat) {
+                const measure = Math.floor(beat / 16);
+                const step = beat % 16;
+                
+                // Deep drone
+                if (step === 0) this.playNote(time, 55, 'sine', 1.0, 0.08);
+                if (step === 8) this.playNote(time, 73.5, 'sine', 0.8, 0.05);
+                
+                // Creepy high tones
+                if (step === 4 && Math.random() < 0.25) {
+                    this.playNote(time, 880 + Math.random() * 200, 'sine', 0.4, 0.02);
+                }
+                
+                // Descending melody every 4 measures
+                if (measure % 4 === 0 && step === 0) {
+                    const notes = [220, 196, 165, 146];
+                    this.playNote(time, notes[measure % 4], 'triangle', 0.5, 0.06);
+                }
+                
+                // Occasional dissonance
+                if (step === 12 && Math.random() < 0.15) {
+                    this.playNote(time, 92 + Math.random() * 20, 'sawtooth', 0.3, 0.04);
+                }
+                
+                // Heartbeat effect every 8 measures
+                if (measure % 8 === 0 && (step === 0 || step === 2)) {
+                    this.playNote(time, 40, 'sine', 0.15, 0.12);
+                }
+            },
+            
+            playNote(time, freq, type, duration, vol) {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, time);
+                osc.connect(gain);
+                gain.connect(this.musicGain);
+                osc.start(time);
+                gain.gain.setValueAtTime(vol, time);
+                gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+                osc.stop(time + duration);
+            }
+        };
+        
+        // Music toggle button
+        const musicToggle = document.getElementById('musicToggle');
+        let musicOn = false;
+        
+        if (musicToggle) {
+            const toggleMusic = () => {
+                musicOn = !musicOn;
+                if (musicOn) {
+                    LandingAudio.start();
+                    musicToggle.textContent = '🔊';
+                    musicToggle.title = 'Выключить музыку';
+                } else {
+                    LandingAudio.stop();
+                    musicToggle.textContent = '🔇';
+                    musicToggle.title = 'Включить музыку';
+                }
+            };
+            
+            musicToggle.addEventListener('click', toggleMusic);
+        }
+        
+        // ===== STAR CANVAS ANIMATION =====
+        const starCanvas = document.getElementById('starCanvas');
+        if (starCanvas) {
+            const starCtx = starCanvas.getContext('2d');
+            let stars = [];
+            
+            function resizeStarCanvas() {
+                starCanvas.width = window.innerWidth;
+                starCanvas.height = window.innerHeight;
+                initStars();
+            }
+            
+            function initStars() {
+                stars = [];
+                const starCount = Math.floor((starCanvas.width * starCanvas.height) / 8000);
+                for (let i = 0; i < starCount; i++) {
+                    stars.push({
+                        x: Math.random() * starCanvas.width,
+                        y: Math.random() * starCanvas.height,
+                        size: Math.random() * 2 + 0.5,
+                        speed: Math.random() * 0.5 + 0.1,
+                        twinkle: Math.random() * Math.PI * 2,
+                        color: Math.random() > 0.9 ? '#ff4444' : '#ffffff'
+                    });
+                }
+            }
+            
+            function animateStars() {
+                starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+                
+                const time = Date.now() * 0.001;
+                
+                for (const star of stars) {
+                    const twinkleAlpha = 0.3 + Math.sin(time * 2 + star.twinkle) * 0.3;
+                    starCtx.globalAlpha = twinkleAlpha;
+                    starCtx.fillStyle = star.color;
+                    starCtx.beginPath();
+                    starCtx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                    starCtx.fill();
+                    
+                    // Slow drift
+                    star.y += star.speed * 0.1;
+                    if (star.y > starCanvas.height) {
+                        star.y = 0;
+                        star.x = Math.random() * starCanvas.width;
+                    }
+                }
+                
+                // Occasional shooting star
+                if (Math.random() < 0.002) {
+                    const sx = Math.random() * starCanvas.width;
+                    const sy = Math.random() * starCanvas.height * 0.5;
+                    starCtx.globalAlpha = 0.8;
+                    starCtx.strokeStyle = '#ffffff';
+                    starCtx.lineWidth = 2;
+                    starCtx.beginPath();
+                    starCtx.moveTo(sx, sy);
+                    starCtx.lineTo(sx + 50, sy + 30);
+                    starCtx.stroke();
+                }
+                
+                starCtx.globalAlpha = 1;
+                requestAnimationFrame(animateStars);
+            }
+            
+            window.addEventListener('resize', resizeStarCanvas);
+            resizeStarCanvas();
+            animateStars();
+        }
+        
+        // ===== SCROLL REVEAL ANIMATIONS =====
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+        
+        // Observe achievement cards
+        document.querySelectorAll('.achievement-card').forEach((card, index) => {
+            card.style.transitionDelay = (index * 0.1) + 's';
+            revealObserver.observe(card);
+        });
+        
+        // Observe other elements
+        document.querySelectorAll('.feature-card, .stat-card, .tip-card').forEach(el => {
+            el.classList.add('scroll-reveal');
+            revealObserver.observe(el);
+        });
+        
+        // ===== ANIMATED COUNTERS =====
+        function animateCounter(element, target) {
+            let current = 0;
+            const increment = target / 50;
+            const duration = 1500;
+            const stepTime = duration / 50;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current).toLocaleString();
+            }, stepTime);
+        }
+        
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = parseInt(entry.target.dataset.target);
+                    animateCounter(entry.target, target);
+                    counterObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        document.querySelectorAll('.stat-number').forEach(el => {
+            counterObserver.observe(el);
+        });
+        
+        // ===== FLOATING PARTICLES AROUND PLAY BUTTON =====
+        const playBtn = document.querySelector('.play-btn');
+        if (playBtn) {
+            for (let i = 0; i < 8; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'btn-particle';
+                particle.style.left = (Math.random() * 100) + '%';
+                particle.style.top = (Math.random() * 100) + '%';
+                particle.style.animationDelay = (Math.random() * 3) + 's';
+                particle.style.background = ['#ff0000', '#ff6600', '#ffff00'][Math.floor(Math.random() * 3)];
+                playBtn.parentElement.style.position = 'relative';
+                playBtn.parentElement.appendChild(particle);
+            }
+        }
+        
+        // ===== PARALLAX EFFECT ON SCROLL =====
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallaxElements = document.querySelectorAll('.background-horror, .star-canvas');
+            parallaxElements.forEach(el => {
+                el.style.transform = `translateY(${scrolled * 0.3}px)`;
+            });
+        });
+        
+        // ===== CHARACTER CARD HOVER SOUNDS =====
+        document.querySelectorAll('.character-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                // Small hover sound effect using Web Audio
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.05, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.1);
+                } catch(e) {}
+            });
+        });
+    </script>
+</body>
+</html>
