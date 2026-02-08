@@ -265,6 +265,32 @@
             gap: 0.3rem 0.6rem;
         }
 
+        .lore-panel {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 0.4rem;
+            padding: 0.5rem 0.8rem;
+            background: rgba(10, 5, 10, 0.8);
+            border: 1px solid rgba(139, 0, 0, 0.35);
+            border-radius: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem 1rem;
+            font-size: clamp(0.65rem, 1.8vw, 0.8rem);
+            color: rgba(245, 230, 230, 0.75);
+            box-shadow: inset 0 0 12px rgba(139, 0, 0, 0.15);
+        }
+
+        .lore-panel strong {
+            color: #ff6666;
+            font-family: 'Cinzel', serif;
+            font-size: clamp(0.7rem, 2vw, 0.85rem);
+        }
+
+        .lore-panel span {
+            color: rgba(245, 240, 225, 0.9);
+        }
+
         .hud-item {
             display: flex;
             align-items: center;
@@ -800,6 +826,8 @@
         .dialogue-speaker.deadlights { color: #ff6600; }
         .dialogue-speaker.trail { color: #cc3333; }
         .dialogue-speaker.wisp { color: #ffaa00; }
+        .dialogue-speaker.mist_keeper { color: #a0d0ff; }
+        .dialogue-speaker.storm_smith { color: #7fbaff; }
         .dialogue-speaker.church { color: #808080; }
         .dialogue-speaker.sauron { color: #ff4400; }
         .dialogue-speaker.nazgul { color: #333333; }
@@ -1551,6 +1579,13 @@
             <p>Ночью Влад просыпается в холодном поту. Вооружившись бабушкиной <strong>боевой метлой</strong> 
             и надев красные кроссовки судьбы, он отправляется в змеиное логово спасать друга!</p>
         </div>
+
+        <div class="story-box">
+            <p><strong>Новое в этой версии:</strong></p>
+            <p>• Путевой дневник — подсказки о главе, ловушках и боссе прямо в бою.</p>
+            <p>• Два новых босса середины пути: Смотритель Тумана и Громокузнец.</p>
+            <p>• Лор-заметки о змеиных землях и обновлённые достижения охотника.</p>
+        </div>
         
         <div class="hero-preview">
             <canvas id="heroPreview" width="100" height="110"></canvas>
@@ -1593,6 +1628,12 @@
             <div class="boss-health">
                 <div class="boss-health-fill" id="bossHealth"></div>
             </div>
+        </div>
+
+        <div class="lore-panel" id="lorePanel">
+            <div><strong>Глава:</strong> <span id="loreChapter">—</span></div>
+            <div><strong>Опасность:</strong> <span id="loreThreat">—</span></div>
+            <div><strong>Слух о боссе:</strong> <span id="loreBoss">—</span></div>
         </div>
         
         <div class="hud">
@@ -1759,6 +1800,14 @@
                     </select>
                 </div>
             </div>
+            <div style="margin-top: 0.8rem; padding: 0.6rem 0.8rem; background: rgba(20, 5, 10, 0.6); border-radius: 8px; border: 1px solid rgba(139, 0, 0, 0.35);">
+                <div style="font-family: 'Cinzel', serif; color: #ff6666; margin-bottom: 0.4rem;">Новое в хрониках охотника</div>
+                <div style="font-size: 0.85rem; line-height: 1.5; color: rgba(245, 230, 230, 0.8);">
+                    • Путевой дневник с подсказками по главе, ловушкам и боссам.<br>
+                    • Новые боссы середины пути: Смотритель Тумана и Громокузнец.<br>
+                    • Обновлённые достижения и лор-заметки о царстве змей.
+                </div>
+            </div>
             <div style="margin-top: 1rem; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
                 <button class="btn secondary" id="settingsReset">Сбросить</button>
                 <button class="btn" id="settingsClose">Готово</button>
@@ -1896,6 +1945,7 @@ const Game = {
     
     // High score system
     highScore: 0,
+    bossDefeats: {},
 
     // Settings
     settings: {
@@ -2151,6 +2201,69 @@ const Game = {
                 { speaker: "Влад", text: "Арбуз любит гоняться за змеями в парке... Теперь я понимаю почему!" },
                 { speaker: "Королевская кобра", text: "*умирая* Королева... отомстит за нас... и твоего пса..." },
                 { speaker: "Влад", text: "Что?! Что она сделает с Арбузом?!" }
+            ]
+        },
+        { 
+            name: "Архив Туманов", 
+            desc: "Шёпоты змеиной истории и страж тумана",
+            snakeCount: 6, 
+            snakeSpeed: 1.15, 
+            snakeType: 'mist_warden',
+            waves: 3,
+            eliteChance: 0.3,
+            bgColor1: '#101820',
+            bgColor2: '#1b2a33',
+            hasBoss: true,
+            bossType: 'mist_keeper',
+            traps: true,
+            trapType: 'shadow',
+            intel: {
+                chapter: "Туманные хранилища",
+                threat: "Тени и дым сужают видимость",
+                boss: "Смотритель Тумана переписывает судьбу бегунов"
+            },
+            startDialogue: [
+                { speaker: "Влад", text: "Где я? Полки... книги... и всё в тумане?" },
+                { speaker: "???", text: "*шелест страниц* Добро пожаловать в Архив Змеиного Царства..." },
+                { speaker: "Влад", text: "Я ищу Арбуза! Не до чтения!" },
+                { speaker: "Смотритель Тумана", text: "Каждый бегун оставляет след. Я стираю его, если он мешает Королеве." },
+                { speaker: "Влад", text: "Мой след — это 247 паркранов. И я его не отдам!" }
+            ],
+            endDialogue: [
+                { speaker: "Смотритель Тумана", text: "*рассеивается* Ты... развеял мою главу..." },
+                { speaker: "Влад", text: "Мой дневник бега никто не тронет!" },
+                { speaker: "Влад", text: "Арбуз, я иду. Даже через туман." }
+            ]
+        },
+        { 
+            name: "Кузница Гроз", 
+            desc: "Грохот молний и броня змеиного клана",
+            snakeCount: 7, 
+            snakeSpeed: 1.2, 
+            snakeType: 'storm_guard',
+            waves: 3,
+            eliteChance: 0.35,
+            bgColor1: '#141824',
+            bgColor2: '#2a3248',
+            hasBoss: true,
+            bossType: 'storm_smith',
+            traps: true,
+            trapType: 'spike',
+            intel: {
+                chapter: "Кузнечные палаты",
+                threat: "Осколки молний и каленая сталь",
+                boss: "Громокузнец кует оружие для Вики"
+            },
+            startDialogue: [
+                { speaker: "Влад", text: "Гул, как от старта паркрана, только громче..." },
+                { speaker: "???", text: "*удар молота* Ещё один клинок для королевы!" },
+                { speaker: "Громокузнец", text: "Ты мешаешь моему делу, бегун. Станешь частью наковальни!" },
+                { speaker: "Влад", text: "Я уже закален субботними подъёмами. Попробуй сломай!" }
+            ],
+            endDialogue: [
+                { speaker: "Громокузнец", text: "*роняет молот* Молнии... не подчиняются..." },
+                { speaker: "Влад", text: "Мой ритм сильнее твоего грома!" },
+                { speaker: "Влад", text: "Ещё шаг — и я у Арбуза." }
             ]
         },
         { 
@@ -2950,6 +3063,78 @@ const Game = {
             isDeadlights: true,
             glowColor: 'rgba(255, 100, 0, 0.6)'
         },
+        // Mist Keeper minions - Fog wardens
+        mist_warden: {
+            bodyColor: '#3d4a57',
+            accentColor: '#9bb2c4',
+            eyeColor: '#d0f0ff',
+            size: 1.1,
+            damage: 16,
+            points: 230,
+            health: 2,
+            glowColor: 'rgba(120, 180, 200, 0.4)',
+            isMistWarden: true
+        },
+        elite_mist_warden: {
+            bodyColor: '#2c3945',
+            accentColor: '#c0d7e8',
+            eyeColor: '#ffffff',
+            size: 1.4,
+            damage: 26,
+            points: 420,
+            health: 4,
+            isElite: true,
+            glowColor: 'rgba(160, 210, 230, 0.6)',
+            isMistWarden: true
+        },
+        mist_keeper: {
+            bodyColor: '#6b7c8a',
+            accentColor: '#d0e3f2',
+            eyeColor: '#ffffff',
+            size: 1.9,
+            damage: 36,
+            points: 1600,
+            health: 210,
+            isElite: true,
+            isMistKeeper: true,
+            glowColor: 'rgba(160, 210, 230, 0.6)'
+        },
+        // Storm Smith minions - Thunder guards
+        storm_guard: {
+            bodyColor: '#2f3552',
+            accentColor: '#ffd700',
+            eyeColor: '#66ccff',
+            size: 1.1,
+            damage: 18,
+            points: 240,
+            health: 2,
+            glowColor: 'rgba(100, 160, 255, 0.4)',
+            isStormGuard: true
+        },
+        elite_storm_guard: {
+            bodyColor: '#1f2440',
+            accentColor: '#fff2aa',
+            eyeColor: '#aaddee',
+            size: 1.4,
+            damage: 28,
+            points: 440,
+            health: 4,
+            isElite: true,
+            glowColor: 'rgba(140, 190, 255, 0.6)',
+            isStormGuard: true
+        },
+        storm_smith: {
+            bodyColor: '#4b527a',
+            accentColor: '#ffd700',
+            eyeColor: '#ffffff',
+            size: 2.0,
+            damage: 42,
+            points: 1700,
+            health: 230,
+            isElite: true,
+            isStormSmith: true,
+            glowColor: 'rgba(120, 170, 255, 0.6)'
+        },
         // Church (Pet Sematary) minions - Zombie pets
         zombie_pet: {
             bodyColor: '#606060',
@@ -3243,6 +3428,8 @@ const Game = {
         marathoner: { name: "Марафонец", desc: "Пробеги 10 км суммарно", unlocked: false },
         trainDodger: { name: "Зайцем не проедешь", desc: "Победи Железнодорожницу", unlocked: false },
         icyDipper: { name: "Моржеватель", desc: "Победи Моржиху Марину", unlocked: false },
+        mistBreaker: { name: "Рассекатель тумана", desc: "Победи Смотрителя Тумана", unlocked: false },
+        stormBreaker: { name: "Громобой", desc: "Победи Громокузнеца", unlocked: false },
         allBosses: { name: "Охотник на монстров", desc: "Победи всех боссов", unlocked: false }
     },
     totalDistance: 0, // Для достижения "Марафонец"
@@ -4004,6 +4191,8 @@ const Game = {
             'freddy': 'rgba(255, 150, 0, 0.5)',
             'sleepy': 'rgba(150, 100, 200, 0.5)',
             'alexey': 'rgba(100, 150, 255, 0.5)',
+            'mist_keeper': 'rgba(160, 210, 230, 0.6)',
+            'storm_smith': 'rgba(140, 190, 255, 0.6)',
             'evil_vlad': 'rgba(150, 0, 200, 0.6)'
         };
         return colors[bossType] || 'rgba(150, 50, 150, 0.5)';
@@ -4265,6 +4454,7 @@ const Game = {
         
         // Load saved achievements
         this.loadAchievements();
+        this.loadBossDefeats();
         
         // Show high score on landing
         this.updateHighScoreDisplay();
@@ -4356,6 +4546,10 @@ const Game = {
             this.drawPennywiseHead(ctx);
         } else if (speakerLower.includes('тусклые') || speakerLower.includes('огоньки') || speakerLower.includes('deadlight')) {
             this.drawDeadlightsHead(ctx);
+        } else if (speakerLower.includes('смотритель') || speakerLower.includes('туман')) {
+            this.drawMistKeeperHead(ctx);
+        } else if (speakerLower.includes('громокузнец') || speakerLower.includes('гром')) {
+            this.drawStormSmithHead(ctx);
         } else if (speakerLower.includes('моржих') || speakerLower.includes('марина') || speakerLower.includes('закал')) {
             this.drawWalrusLadyHead(ctx);
         } else if (speakerLower.includes('алекс') || speakerLower.includes('турагент')) {
@@ -4903,6 +5097,56 @@ const Game = {
         ctx.fillStyle = '#000';
         ctx.beginPath();
         ctx.ellipse(0, 5, 2, 7, 0, 0, Math.PI * 2);
+        ctx.fill();
+    },
+
+    drawMistKeeperHead(ctx) {
+        // Misty halo
+        const mistGrad = ctx.createRadialGradient(0, 5, 0, 0, 5, 24);
+        mistGrad.addColorStop(0, 'rgba(180, 220, 240, 0.8)');
+        mistGrad.addColorStop(0.6, 'rgba(120, 180, 200, 0.4)');
+        mistGrad.addColorStop(1, 'rgba(60, 90, 110, 0)');
+        ctx.fillStyle = mistGrad;
+        ctx.beginPath();
+        ctx.arc(0, 5, 24, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Hooded face
+        ctx.fillStyle = '#2b3a45';
+        ctx.beginPath();
+        ctx.ellipse(0, 6, 16, 18, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Eyes
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(-5, 4, 3, 0, Math.PI * 2);
+        ctx.arc(5, 4, 3, 0, Math.PI * 2);
+        ctx.fill();
+    },
+
+    drawStormSmithHead(ctx) {
+        // Electric halo
+        const stormGrad = ctx.createRadialGradient(0, 5, 0, 0, 5, 24);
+        stormGrad.addColorStop(0, 'rgba(160, 200, 255, 0.8)');
+        stormGrad.addColorStop(0.6, 'rgba(100, 150, 220, 0.4)');
+        stormGrad.addColorStop(1, 'rgba(30, 50, 90, 0)');
+        ctx.fillStyle = stormGrad;
+        ctx.beginPath();
+        ctx.arc(0, 5, 24, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Helmet
+        ctx.fillStyle = '#3a3f5a';
+        ctx.beginPath();
+        ctx.ellipse(0, 6, 16, 18, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Eye slits
+        ctx.fillStyle = '#7fbaff';
+        ctx.beginPath();
+        ctx.rect(-8, 2, 5, 3);
+        ctx.rect(3, 2, 5, 3);
         ctx.fill();
     },
     
@@ -5910,6 +6154,10 @@ const Game = {
             speakerEl.classList.add('pennywise');
         } else if (speakerLower.includes('темн') || speakerLower.includes('олег') || speakerLower.includes('лорд')) {
             speakerEl.classList.add('voldemort');
+        } else if (speakerLower.includes('смотритель') || speakerLower.includes('туман')) {
+            speakerEl.classList.add('mist_keeper');
+        } else if (speakerLower.includes('громокузнец') || speakerLower.includes('гром')) {
+            speakerEl.classList.add('storm_smith');
         } else if (speakerLower.includes('моржих') || speakerLower.includes('марина') || speakerLower.includes('закал')) {
             speakerEl.classList.add('walrus');
         } else if (speakerLower.includes('алекс') || speakerLower.includes('турагент')) {
@@ -6049,6 +6297,10 @@ const Game = {
             this.drawHumusPortrait(ctx);
         } else if (charLower.includes('тусклые') || charLower.includes('огоньки') || charLower.includes('deadlight') || charLower.includes('блужд')) {
             this.drawDeadlightsPortrait(ctx);
+        } else if (charLower.includes('смотритель') || charLower.includes('туман')) {
+            this.drawMistKeeperPortrait(ctx);
+        } else if (charLower.includes('громокузнец') || charLower.includes('гром')) {
+            this.drawStormSmithPortrait(ctx);
         } else if (charLower.includes('чёртик') || charLower.includes('чертик') || charLower.includes('кот чёртик') || charLower.includes('кладбищ')) {
             this.drawChurchPortrait(ctx);
         } else if (charLower.includes('глаз') || charLower.includes('савран') || charLower.includes('саурон') || charLower.includes('око')) {
@@ -6615,6 +6867,69 @@ const Game = {
         ctx.beginPath();
         ctx.arc(0, 5, 2, 0, Math.PI * 2);
         ctx.fill();
+    },
+
+    drawMistKeeperPortrait(ctx) {
+        // Mist background
+        const mistGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 50);
+        mistGrad.addColorStop(0, 'rgba(180, 220, 240, 0.7)');
+        mistGrad.addColorStop(0.6, 'rgba(120, 180, 200, 0.3)');
+        mistGrad.addColorStop(1, 'rgba(40, 70, 90, 0)');
+        ctx.fillStyle = mistGrad;
+        ctx.beginPath();
+        ctx.arc(0, 0, 50, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Hood
+        ctx.fillStyle = '#2b3a45';
+        ctx.beginPath();
+        ctx.ellipse(0, 5, 22, 26, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Eyes
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(-6, 2, 3, 0, Math.PI * 2);
+        ctx.arc(6, 2, 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Scroll
+        ctx.fillStyle = '#c0d7e8';
+        ctx.fillRect(-12, 25, 24, 8);
+    },
+
+    drawStormSmithPortrait(ctx) {
+        // Electric background
+        const stormGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 50);
+        stormGrad.addColorStop(0, 'rgba(160, 200, 255, 0.7)');
+        stormGrad.addColorStop(0.6, 'rgba(100, 140, 210, 0.3)');
+        stormGrad.addColorStop(1, 'rgba(20, 40, 80, 0)');
+        ctx.fillStyle = stormGrad;
+        ctx.beginPath();
+        ctx.arc(0, 0, 50, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Helmet
+        ctx.fillStyle = '#3a3f5a';
+        ctx.beginPath();
+        ctx.ellipse(0, 5, 22, 24, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Eye slits
+        ctx.fillStyle = '#7fbaff';
+        ctx.beginPath();
+        ctx.rect(-10, 2, 6, 3);
+        ctx.rect(4, 2, 6, 3);
+        ctx.fill();
+
+        // Hammer spark
+        ctx.strokeStyle = '#c4dcff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(10, 20);
+        ctx.lineTo(18, 12);
+        ctx.lineTo(24, 20);
+        ctx.stroke();
     },
     
     drawChurchPortrait(ctx) {
@@ -7700,6 +8015,8 @@ const Game = {
         if (speaker.includes('алекс') || speaker.includes('турагент')) return '#4169e1';
         if (speaker.includes('гумус')) return '#cc3333';
         if (speaker.includes('тусклые') || speaker.includes('огоньки') || speaker.includes('блужд') || speaker.includes('deadlight')) return '#ff6600';
+        if (speaker.includes('смотритель') || speaker.includes('туман')) return '#a0d0ff';
+        if (speaker.includes('громокузнец') || speaker.includes('гром')) return '#7fbaff';
         if (speaker.includes('чёртик') || speaker.includes('чертик') || speaker.includes('кот чёртик')) return '#808080';
         if (speaker.includes('глаз') || speaker.includes('савран') || speaker.includes('саурон') || speaker.includes('око')) return '#ff4400';
         if (speaker.includes('назгул')) return '#333333';
@@ -7756,6 +8073,10 @@ const Game = {
             this.drawHumusPortrait(ctx);
         } else if (charLower.includes('тусклые') || charLower.includes('огоньки') || charLower.includes('блужд') || charLower.includes('deadlight')) {
             this.drawDeadlightsPortrait(ctx);
+        } else if (charLower.includes('смотритель') || charLower.includes('туман')) {
+            this.drawMistKeeperPortrait(ctx);
+        } else if (charLower.includes('громокузнец') || charLower.includes('гром')) {
+            this.drawStormSmithPortrait(ctx);
         } else if (charLower.includes('чёртик') || charLower.includes('чертик') || charLower.includes('кот чёртик') || charLower.includes('кладбищ')) {
             this.drawChurchPortrait(ctx);
         } else if (charLower.includes('глаз') || charLower.includes('савран') || charLower.includes('саурон') || charLower.includes('око')) {
@@ -8274,6 +8595,18 @@ const Game = {
                 titleEl.style.textShadow = "0 0 15px rgba(255, 100, 0, 0.7)";
                 document.querySelector('.boss-health-fill').style.background = "linear-gradient(90deg, #330000, #ff6600, #ffcc00)";
                 levelDescEl.textContent = "Смотри на огни...";
+            } else if (lvl.bossType === 'mist_keeper') {
+                titleEl.textContent = "🌫️ Смотритель Тумана 🌫️";
+                titleEl.style.color = "#a0d0ff"; 
+                titleEl.style.textShadow = "0 0 15px rgba(160, 210, 230, 0.8)";
+                document.querySelector('.boss-health-fill').style.background = "linear-gradient(90deg, #1c2a33, #5c90b0, #c0e0ff)";
+                levelDescEl.textContent = "Туман переписывает путь...";
+            } else if (lvl.bossType === 'storm_smith') {
+                titleEl.textContent = "⚡ Громокузнец ⚡";
+                titleEl.style.color = "#7fbaff"; 
+                titleEl.style.textShadow = "0 0 15px rgba(127, 186, 255, 0.8)";
+                document.querySelector('.boss-health-fill').style.background = "linear-gradient(90deg, #1a2238, #4b6fa8, #c4dcff)";
+                levelDescEl.textContent = "Кует молнии для Вики!";
             } else if (lvl.bossType === 'humus') {
                 titleEl.textContent = "🏃 Гумус Трейл 🏃";
                 titleEl.style.color = "#cc3333"; 
@@ -8368,7 +8701,65 @@ const Game = {
         this.particles = [];
         this.pickups = [];
         this.floatingTexts = [];
+        this.updateLorePanel(lvl);
         this.updateHUD();
+    },
+
+    updateLorePanel(lvl) {
+        if (!lvl) return;
+        const chapterEl = document.getElementById('loreChapter');
+        const threatEl = document.getElementById('loreThreat');
+        const bossEl = document.getElementById('loreBoss');
+        if (!chapterEl || !threatEl || !bossEl) return;
+
+        const trapLabels = {
+            poison: 'Ядовитые лужи',
+            spike: 'Каменные шипы',
+            fire: 'Огненные вспышки',
+            shadow: 'Тени-ловушки',
+            ice: 'Скользкий лёд',
+            thorn: 'Колючие корни',
+            ice_hole: 'Проруби',
+            luggage: 'Чемоданные капканы',
+            deadlight: 'Гипно-огни',
+            grave: 'Погостные ямы',
+            mordor: 'Жар Мордора',
+            nightmare: 'Кошмарные когти',
+            balrog_fire: 'Дыхание пламени',
+            theater: 'Сцена-ловушка',
+            rails: 'Рельсовые пробоины',
+            dark_magic: 'Тёмные руны'
+        };
+
+        const bossNames = {
+            voldemort: 'Темный Лорд Олег',
+            pennywise: 'Клоун Хихикуйз',
+            deadlights: 'Тусклые Огоньки',
+            church: 'Кот Чёртик',
+            humus: 'Гумус Трейл',
+            sauron: 'Глаз Саврана',
+            alexey: 'Турагент Алексей',
+            railway_lady: 'Железнодорожница',
+            phantom: 'Масочник',
+            freddy: 'Сонный Федя',
+            walrus_lady: 'Моржиха Ольга',
+            balrog: 'Огненный Барсик',
+            mist_keeper: 'Смотритель Тумана',
+            storm_smith: 'Громокузнец',
+            evil_vlad: 'Злой Влад',
+            vika: 'Королева Вика'
+        };
+
+        const intel = lvl.intel || {};
+        chapterEl.textContent = intel.chapter || lvl.name;
+        threatEl.textContent = intel.threat || (lvl.traps ? (trapLabels[lvl.trapType] || 'Неизвестные ловушки') : 'Ловушки отключены');
+
+        if (lvl.hasBoss) {
+            const bossKey = lvl.bossType || 'vika';
+            bossEl.textContent = intel.boss || bossNames[bossKey] || 'Неизвестный босс';
+        } else {
+            bossEl.textContent = intel.boss || 'Босса не ожидается';
+        }
     },
     
     spawnSnake(baseSpeed, type) {
@@ -10213,11 +10604,12 @@ const Game = {
                     // Slow-mo for dramatic effect
                     this.setSlowMo(0.3, 500);
                     
+                    const currentLvl = this.levels[this.level];
+                    this.recordBossDefeat(currentLvl?.bossType);
                     this.boss = null;
                     document.getElementById('bossBar').classList.remove('active'); // Hide boss bar
                     // Check if this is the final level (last level with boss)
                     const isFinalLevel = this.level === this.levels.length - 1;
-                    const currentLvl = this.levels[this.level];
                     const isValeraBattle = currentLvl && currentLvl.isValeraBattle;
                     
                     if (isValeraBattle) {
@@ -10343,11 +10735,12 @@ const Game = {
                         ['#7a4a7a', '#cc0000', '#ff00ff'][Math.floor(Math.random() * 3)]
                     );
                 }
+                const currentLvl = this.levels[this.level];
+                this.recordBossDefeat(currentLvl?.bossType);
                 this.boss = null;
                 document.getElementById('bossBar').classList.remove('active'); // Hide boss bar
                 // Check if this is the final level (last level with boss)
                 const isFinalLevel = this.level === this.levels.length - 1;
-                const currentLvl = this.levels[this.level];
                 const isValeraBattle = currentLvl && currentLvl.isValeraBattle;
                 
                 if (isValeraBattle) {
@@ -10543,6 +10936,61 @@ const Game = {
                 this.achievements[id].unlocked = true;
             }
         });
+    },
+
+    loadBossDefeats() {
+        this.bossDefeats = JSON.parse(localStorage.getItem('snakeSlayerBossDefeats') || '{}');
+    },
+
+    recordBossDefeat(bossType) {
+        const key = bossType || 'vika';
+        if (!this.bossDefeats[key]) {
+            this.bossDefeats[key] = true;
+            localStorage.setItem('snakeSlayerBossDefeats', JSON.stringify(this.bossDefeats));
+        }
+        this.checkBossAchievements(key);
+    },
+
+    checkBossAchievements(bossType) {
+        if (bossType === 'vika') {
+            this.unlockAchievement('bossSlayer');
+        }
+        if (bossType === 'railway_lady') {
+            this.unlockAchievement('trainDodger');
+        }
+        if (bossType === 'walrus_lady') {
+            this.unlockAchievement('icyDipper');
+        }
+        if (bossType === 'mist_keeper') {
+            this.unlockAchievement('mistBreaker');
+        }
+        if (bossType === 'storm_smith') {
+            this.unlockAchievement('stormBreaker');
+        }
+
+        const bossRoster = [
+            'voldemort',
+            'church',
+            'pennywise',
+            'deadlights',
+            'mist_keeper',
+            'storm_smith',
+            'humus',
+            'sauron',
+            'alexey',
+            'railway_lady',
+            'phantom',
+            'freddy',
+            'walrus_lady',
+            'balrog',
+            'vika',
+            'evil_vlad'
+        ];
+
+        const allDefeated = bossRoster.every((boss) => this.bossDefeats[boss]);
+        if (allDefeated) {
+            this.unlockAchievement('allBosses');
+        }
     },
     
     checkAchievements() {
@@ -11492,6 +11940,8 @@ const Game = {
             else if (lvl.bossType === 'pennywise') minionType = 'balloon';
             else if (lvl.bossType === 'deadlights') minionType = 'wisp';
             else if (lvl.bossType === 'church') minionType = 'zombie_pet';
+            else if (lvl.bossType === 'mist_keeper') minionType = 'mist_warden';
+            else if (lvl.bossType === 'storm_smith') minionType = 'storm_guard';
             else if (lvl.bossType === 'humus') minionType = 'trail_runner';
             else if (lvl.bossType === 'walrus_lady') minionType = 'ice_swimmer';
             else if (lvl.bossType === 'alexey') minionType = 'tourist';
@@ -11628,6 +12078,32 @@ const Game = {
                     });
                 }
                 this.spawnFloatingText(b.x, b.y - 60, '👁️ СМОТРИ...', '#ff6600');
+            } else if (lvl.bossType === 'mist_keeper') {
+                // Смотритель Тумана - осколки тумана по вееру
+                for (let i = -2; i <= 2; i++) {
+                    const angle = Math.atan2(p.y - b.y, p.x - b.x) + i * 0.25;
+                    this.particles.push({
+                        x: b.x, y: b.y + 30,
+                        vx: Math.cos(angle) * 4.5,
+                        vy: Math.sin(angle) * 4.5,
+                        life: 90, color: '#a0d0ff', size: 18,
+                        type: 'mist_shard', damage: true
+                    });
+                }
+                this.spawnFloatingText(b.x, b.y - 60, '🌫️ ТУМАН ВПЕРЁД!', '#a0d0ff');
+            } else if (lvl.bossType === 'storm_smith') {
+                // Громокузнец - молнии по игроку
+                for (let i = -1; i <= 1; i++) {
+                    const angle = Math.atan2(p.y - b.y, p.x - b.x) + i * 0.2;
+                    this.particles.push({
+                        x: b.x, y: b.y + 30,
+                        vx: Math.cos(angle) * 6,
+                        vy: Math.sin(angle) * 6,
+                        life: 70, color: '#7fbaff', size: 22,
+                        type: 'storm_bolt', damage: true
+                    });
+                }
+                this.spawnFloatingText(b.x, b.y - 60, '⚡ МОЛНИЯ КОВКИ!', '#7fbaff');
             } else if (lvl.bossType === 'church') {
                 // Кот Чёртик - выпускает призрачных котов
                 for (let i = -1; i <= 1; i++) {
@@ -11828,6 +12304,10 @@ const Game = {
                     damage = 12;
                 } else if (particle.type === 'deadlight_orb') {
                     damage = 18;
+                } else if (particle.type === 'mist_shard') {
+                    damage = 12;
+                } else if (particle.type === 'storm_bolt') {
+                    damage = 22;
                 } else if (particle.type === 'ghost_cat') {
                     damage = 14;
                 } else if (particle.type === 'energy_bolt') {
@@ -16808,6 +17288,156 @@ const Game = {
                 ctx.fill();
             }
             
+        } else if (lvl.bossType === 'mist_keeper') {
+            // === MIST KEEPER BOSS (Смотритель Тумана) ===
+            
+            // Mist aura
+            const mistAura = ctx.createRadialGradient(0, 0, 0, 0, 0, 100);
+            mistAura.addColorStop(0, 'rgba(160, 210, 230, 0.25)');
+            mistAura.addColorStop(0.5, 'rgba(120, 180, 200, 0.15)');
+            mistAura.addColorStop(1, 'rgba(60, 90, 110, 0)');
+            ctx.fillStyle = mistAura;
+            ctx.beginPath();
+            ctx.arc(0, 0, 100, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Floating fog wisps
+            for (let i = 0; i < 5; i++) {
+                const fogAngle = (Date.now() * 0.002 + i * Math.PI * 2 / 5);
+                const fx = Math.cos(fogAngle) * 60;
+                const fy = Math.sin(fogAngle) * 35 - 10;
+                ctx.fillStyle = 'rgba(200, 230, 240, 0.3)';
+                ctx.beginPath();
+                ctx.ellipse(fx, fy, 18, 10, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            const bobY = Math.sin(Date.now() * 0.003) * 6;
+            ctx.translate(0, bobY);
+            
+            // Cloak
+            ctx.fillStyle = '#2b3a45';
+            ctx.beginPath();
+            ctx.moveTo(-35, 5);
+            ctx.lineTo(-50, 80);
+            ctx.quadraticCurveTo(0, 95, 50, 80);
+            ctx.lineTo(35, 5);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Scrolls on belt
+            ctx.fillStyle = '#c0d7e8';
+            ctx.fillRect(-25, 30, 20, 10);
+            ctx.fillRect(5, 32, 22, 10);
+            
+            // Staff
+            ctx.strokeStyle = '#6b7c8a';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(-45, 10);
+            ctx.lineTo(-60, 70);
+            ctx.stroke();
+            ctx.fillStyle = '#d0e3f2';
+            ctx.beginPath();
+            ctx.arc(-45, 5, 7, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Head
+            ctx.fillStyle = '#cfdde8';
+            ctx.beginPath();
+            ctx.ellipse(0, -25, 22, 26, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Glowing eyes
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(-8, -28, 4, 0, Math.PI * 2);
+            ctx.arc(8, -28, 4, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Mouth
+            ctx.strokeStyle = '#4a6a7a';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, -18, 8, 0.2, Math.PI - 0.2);
+            ctx.stroke();
+            
+        } else if (lvl.bossType === 'storm_smith') {
+            // === STORM SMITH BOSS (Громокузнец) ===
+            
+            // Electric aura
+            const stormAura = ctx.createRadialGradient(0, 0, 0, 0, 0, 110);
+            stormAura.addColorStop(0, 'rgba(120, 170, 255, 0.25)');
+            stormAura.addColorStop(0.5, 'rgba(80, 120, 200, 0.15)');
+            stormAura.addColorStop(1, 'rgba(20, 40, 80, 0)');
+            ctx.fillStyle = stormAura;
+            ctx.beginPath();
+            ctx.arc(0, 0, 110, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Lightning arcs
+            ctx.strokeStyle = '#c4dcff';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 3; i++) {
+                const lx = -40 + i * 40;
+                ctx.beginPath();
+                ctx.moveTo(lx, -20);
+                ctx.lineTo(lx + 8, -5);
+                ctx.lineTo(lx - 6, 10);
+                ctx.lineTo(lx + 6, 25);
+                ctx.stroke();
+            }
+            
+            const smithBob = Math.sin(Date.now() * 0.002) * 5;
+            ctx.translate(0, smithBob);
+            
+            // Armor torso
+            ctx.fillStyle = '#3a3f5a';
+            ctx.beginPath();
+            ctx.moveTo(-35, 0);
+            ctx.lineTo(-45, 70);
+            ctx.quadraticCurveTo(0, 80, 45, 70);
+            ctx.lineTo(35, 0);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Chest plate
+            ctx.strokeStyle = '#ffd700';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(-18, 10, 36, 30);
+            
+            // Hammer
+            ctx.fillStyle = '#6b7c8a';
+            ctx.fillRect(45, 5, 22, 12);
+            ctx.strokeStyle = '#8a5a3a';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(50, 10);
+            ctx.lineTo(65, 60);
+            ctx.stroke();
+            
+            // Head
+            ctx.fillStyle = '#cfdde8';
+            ctx.beginPath();
+            ctx.ellipse(0, -25, 22, 24, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Eyes
+            ctx.fillStyle = '#7fbaff';
+            ctx.beginPath();
+            ctx.arc(-8, -28, 4, 0, Math.PI * 2);
+            ctx.arc(8, -28, 4, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Beard sparks
+            ctx.strokeStyle = '#c4dcff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-12, -15);
+            ctx.lineTo(-18, -5);
+            ctx.lineTo(-10, 0);
+            ctx.stroke();
+            
         } else if (lvl.bossType === 'humus') {
             // === HUMUS BOSS (Skinny Trail Runner) ===
             
@@ -18523,6 +19153,34 @@ const Game = {
                 ctx.beginPath();
                 ctx.ellipse(p.x, p.y, 4, 6, 0, 0, Math.PI * 2);
                 ctx.fill();
+            } else if (p.type === 'mist_shard') {
+                // Осколок тумана
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(Math.atan2(p.vy, p.vx));
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha *= 0.7;
+                ctx.beginPath();
+                ctx.moveTo(-p.size * 0.6, -p.size * 0.3);
+                ctx.lineTo(p.size * 0.8, 0);
+                ctx.lineTo(-p.size * 0.6, p.size * 0.3);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            } else if (p.type === 'storm_bolt') {
+                // Молния громокузнеца
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(Math.atan2(p.vy, p.vx));
+                ctx.strokeStyle = p.color;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(-p.size * 0.6, -p.size * 0.2);
+                ctx.lineTo(-p.size * 0.1, -p.size * 0.4);
+                ctx.lineTo(p.size * 0.1, 0);
+                ctx.lineTo(p.size * 0.6, p.size * 0.2);
+                ctx.stroke();
+                ctx.restore();
             } else if (p.type === 'ghost_cat') {
                 // Призрачный кот
                 ctx.save();
@@ -19786,6 +20444,8 @@ const Game = {
         if (lvl.name.includes('Яд') || lvl.name.includes('оксич')) return 'toxic';
         if (lvl.name.includes('Клад') || lvl.name.includes('Кошмар')) return 'cemetery';
         if (lvl.name.includes('Бал') || lvl.name.includes('Пламя')) return 'fire';
+        if (lvl.name.includes('Кузниц') || lvl.name.includes('Гроз')) return 'fire';
+        if (lvl.name.includes('Туман')) return 'castle';
         if (lvl.name.includes('Тём') || lvl.name.includes('Замок')) return 'castle';
         if (lvl.name.includes('Театр') || lvl.name.includes('Опер')) return 'theater';
         return 'forest';
@@ -20338,6 +20998,8 @@ const Game = {
         if (bossType === 'church' || snakeType === 'ghost' || snakeType === 'zombie_pet') return 'cemetery';
         if (bossType === 'railway_lady') return 'train';
         if (bossType === 'phantom') return 'theater';
+        if (bossType === 'mist_keeper') return 'castle';
+        if (bossType === 'storm_smith') return 'fire';
         if (bossType === 'voldemort' || bossType === 'sauron') return 'castle';
         
         // Default to forest for early levels
@@ -20355,6 +21017,10 @@ const Game = {
             this.setWeather('snow', 0.8);
         } else if (bossType === 'balrog') {
             this.setWeather('ash', 1.0);
+        } else if (bossType === 'mist_keeper') {
+            this.setWeather('fog', 0.7);
+        } else if (bossType === 'storm_smith') {
+            this.setWeather('rain', 0.7);
         } else if (bossType === 'church') {
             this.setWeather('fog', 0.6);
         } else if (bossType === 'railway_lady') {
