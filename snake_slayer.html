@@ -1233,6 +1233,16 @@
             background: linear-gradient(135deg, #8b0000, #4a0000) !important;
             border-color: #8b0000 !important;
         }
+
+        .btn.secondary {
+            background: linear-gradient(135deg, rgba(120, 120, 120, 0.6), rgba(80, 80, 80, 0.6));
+            border-color: rgba(200, 200, 200, 0.4);
+            color: #f5e6e6;
+        }
+
+        .btn.secondary:hover {
+            background: linear-gradient(135deg, rgba(160, 160, 160, 0.7), rgba(100, 100, 100, 0.7));
+        }
         
         @keyframes pulse-button {
             0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 105, 180, 0.5); }
@@ -1465,6 +1475,66 @@
         .cutscene-text.appearing {
             animation: textAppear 0.3s ease-out;
         }
+
+        /* ===== SETTINGS OVERLAY ===== */
+        .settings-panel {
+            width: min(520px, 95vw);
+            background: rgba(15, 10, 15, 0.95);
+            border: 1px solid rgba(139, 0, 0, 0.4);
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            text-align: left;
+            box-shadow: 0 0 25px rgba(139, 0, 0, 0.35);
+        }
+
+        .settings-panel h3 {
+            font-family: 'Cinzel', serif;
+            color: #ff6666;
+            margin-bottom: 0.8rem;
+        }
+
+        .settings-grid {
+            display: grid;
+            gap: 0.6rem;
+        }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.5rem 0.8rem;
+            background: rgba(30, 15, 20, 0.6);
+            border-radius: 8px;
+            border: 1px solid rgba(139, 0, 0, 0.2);
+        }
+
+        .setting-row label {
+            color: rgba(245, 230, 230, 0.9);
+            font-size: 0.95rem;
+        }
+
+        .setting-row input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #cc0000;
+        }
+
+        .setting-row select {
+            background: rgba(10, 5, 5, 0.9);
+            color: #f5e6e6;
+            border: 1px solid rgba(139, 0, 0, 0.6);
+            border-radius: 6px;
+            padding: 0.3rem 0.6rem;
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+        }
+
+        /* Reduced motion */
+        body.reduced-motion * {
+            animation: none !important;
+            transition: none !important;
+        }
     </style>
 </head>
 <body>
@@ -1494,6 +1564,10 @@
         
         <button class="btn music-btn" id="musicBtn" style="margin-top: 10px; background: rgba(50,50,50,0.8); font-size: 0.9rem; padding: 8px 20px;">
             🔇 Включить музыку
+        </button>
+
+        <button class="btn secondary" id="settingsBtn" style="margin-top: 10px; font-size: 0.85rem; padding: 6px 18px;">
+            ⚙️ Настройки
         </button>
         
         <div class="controls-preview">
@@ -1650,6 +1724,46 @@
         <h2 class="overlay-title">Пауза</h2>
         <p class="overlay-text">Даже герою в ночнушке нужен отдых...</p>
         <button class="btn" onclick="Game.togglePause()">Продолжить</button>
+        <button class="btn secondary" onclick="Game.openSettings()" style="margin-top: 10px;">⚙️ Настройки</button>
+    </div>
+
+    <div class="overlay" id="settingsOverlay">
+        <div class="settings-panel">
+            <h3>⚙️ Настройки</h3>
+            <div class="settings-grid">
+                <div class="setting-row">
+                    <label for="settingMusic">Музыка</label>
+                    <input type="checkbox" id="settingMusic">
+                </div>
+                <div class="setting-row">
+                    <label for="settingSfx">Звуковые эффекты</label>
+                    <input type="checkbox" id="settingSfx">
+                </div>
+                <div class="setting-row">
+                    <label for="settingReducedMotion">Уменьшить анимации</label>
+                    <input type="checkbox" id="settingReducedMotion">
+                </div>
+                <div class="setting-row">
+                    <label for="settingLeftHanded">Левша-режим (моб.)</label>
+                    <input type="checkbox" id="settingLeftHanded">
+                </div>
+                <div class="setting-row">
+                    <label for="settingGameMode">Режим игры</label>
+                    <select id="settingGameMode">
+                        <option value="standard">Стандарт</option>
+                        <option value="hardcore">Хардкор</option>
+                        <option value="bossRush">Босс-раш</option>
+                        <option value="endless">Бесконечный</option>
+                        <option value="timeAttack">На время</option>
+                        <option value="newGamePlus">Новая игра+</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
+                <button class="btn secondary" id="settingsReset">Сбросить</button>
+                <button class="btn" id="settingsClose">Готово</button>
+            </div>
+        </div>
     </div>
 
     <div class="overlay" id="levelOverlay">
@@ -1782,6 +1896,16 @@ const Game = {
     
     // High score system
     highScore: 0,
+
+    // Settings
+    settings: {
+        musicEnabled: true,
+        sfxEnabled: true,
+        reducedMotion: false,
+        leftHanded: false,
+        gameMode: 'standard'
+    },
+    wasPausedBeforeSettings: false,
     
     // Power-ups
     activePowerUps: {
@@ -3898,7 +4022,162 @@ const Game = {
             'evil_vlad': 'boss_final'
         };
         const track = musicMap[bossType] || 'boss';
-        this.audio.startMusic(track);
+        if (this.settings.musicEnabled) {
+            this.audio.startMusic(track);
+        } else {
+            this.audio.stopMusic();
+        }
+    },
+
+    // ========== SETTINGS ==========
+    loadSettings() {
+        const saved = JSON.parse(localStorage.getItem('snakeSlayerSettings') || '{}');
+        const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        this.settings = {
+            musicEnabled: saved.musicEnabled ?? true,
+            sfxEnabled: saved.sfxEnabled ?? true,
+            reducedMotion: saved.reducedMotion ?? prefersReducedMotion,
+            leftHanded: saved.leftHanded ?? false,
+            gameMode: saved.gameMode ?? 'standard'
+        };
+        this.setGameMode(this.settings.gameMode);
+    },
+
+    saveSettings() {
+        localStorage.setItem('snakeSlayerSettings', JSON.stringify(this.settings));
+    },
+
+    applySettings() {
+        document.body.classList.toggle('reduced-motion', this.settings.reducedMotion);
+        const mobileControls = document.getElementById('mobileControls');
+        if (mobileControls) {
+            mobileControls.classList.toggle('left-handed', this.settings.leftHanded);
+        }
+        if (this.audio && this.audio.masterGain) {
+            this.audio.musicGain.gain.value = this.settings.musicEnabled ? 0.3 : 0;
+            this.audio.sfxGain.gain.value = this.settings.sfxEnabled ? 0.6 : 0;
+            if (!this.settings.musicEnabled && this.audio.isPlaying) {
+                this.audio.stopMusic();
+            }
+        }
+        this.updateMusicButton();
+    },
+
+    bindSettingsUI() {
+        const settingsBtn = document.getElementById('settingsBtn');
+        const closeBtn = document.getElementById('settingsClose');
+        const resetBtn = document.getElementById('settingsReset');
+
+        if (settingsBtn) {
+            settingsBtn.addEventListener('click', () => this.openSettings());
+        }
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => this.closeSettings());
+        }
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => this.resetSettings());
+        }
+
+        const bindCheckbox = (id, key) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('change', () => {
+                this.settings[key] = el.checked;
+                this.applySettings();
+                this.saveSettings();
+            });
+        };
+
+        bindCheckbox('settingMusic', 'musicEnabled');
+        bindCheckbox('settingSfx', 'sfxEnabled');
+        bindCheckbox('settingReducedMotion', 'reducedMotion');
+        bindCheckbox('settingLeftHanded', 'leftHanded');
+
+        const modeSelect = document.getElementById('settingGameMode');
+        if (modeSelect) {
+            modeSelect.addEventListener('change', () => {
+                this.settings.gameMode = modeSelect.value;
+                this.setGameMode(this.settings.gameMode);
+                this.saveSettings();
+            });
+        }
+        this.syncSettingsUI();
+    },
+
+    syncSettingsUI() {
+        const setCheckbox = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.checked = Boolean(value);
+        };
+        setCheckbox('settingMusic', this.settings.musicEnabled);
+        setCheckbox('settingSfx', this.settings.sfxEnabled);
+        setCheckbox('settingReducedMotion', this.settings.reducedMotion);
+        setCheckbox('settingLeftHanded', this.settings.leftHanded);
+
+        const modeSelect = document.getElementById('settingGameMode');
+        if (modeSelect) {
+            modeSelect.value = this.settings.gameMode;
+        }
+    },
+
+    openSettings() {
+        const overlay = document.getElementById('settingsOverlay');
+        if (overlay) overlay.classList.add('active');
+        this.wasPausedBeforeSettings = this.paused;
+        if (this.running && !this.paused) this.togglePause();
+        this.syncSettingsUI();
+    },
+
+    closeSettings() {
+        const overlay = document.getElementById('settingsOverlay');
+        if (overlay) overlay.classList.remove('active');
+        if (!this.wasPausedBeforeSettings && this.running && this.paused && !this.cutsceneMode && !this.dialogueActive) {
+            this.togglePause();
+        }
+        this.wasPausedBeforeSettings = false;
+    },
+
+    resetSettings() {
+        this.settings = {
+            musicEnabled: true,
+            sfxEnabled: true,
+            reducedMotion: false,
+            leftHanded: false,
+            gameMode: 'standard'
+        };
+        this.setGameMode(this.settings.gameMode);
+        this.applySettings();
+        this.saveSettings();
+        this.syncSettingsUI();
+    },
+
+    updateMusicButton() {
+        const musicBtn = document.getElementById('musicBtn');
+        if (!musicBtn) return;
+        if (this.settings.musicEnabled) {
+            musicBtn.textContent = '🔊 Выключить музыку';
+            musicBtn.style.background = 'linear-gradient(135deg, #8b0000, #4a0000)';
+        } else {
+            musicBtn.textContent = '🔇 Включить музыку';
+            musicBtn.style.background = 'rgba(50,50,50,0.8)';
+        }
+    },
+
+    triggerShake(amount) {
+        if (this.settings.reducedMotion) return;
+        this.screenShake = Math.max(this.screenShake, amount);
+    },
+
+    triggerHitFlash(amount) {
+        if (this.settings.reducedMotion) return;
+        this.hitFlash = Math.max(this.hitFlash, amount);
+    },
+
+    addScore(points) {
+        const multiplier = this.applyGameModeModifiers().scoreMultiplier;
+        const total = Math.floor(points * multiplier);
+        this.score += total;
+        return total;
     },
 
     // ========== INIT ==========
@@ -3908,10 +4187,14 @@ const Game = {
         
         // Load high score
         this.highScore = parseInt(localStorage.getItem('snakeSlayerHighScore') || '0');
+        this.loadSettings();
         
+        this.applySettings();
+        this.bindSettingsUI();
+
         // Music button in menu
         const musicBtn = document.getElementById('musicBtn');
-        let menuMusicOn = false;
+        this.menuMusicOn = false;
         
         const toggleMenuMusic = () => {
             if (!this.audio.ctx) {
@@ -3919,23 +4202,24 @@ const Game = {
                 this.initNewAudioMethods(); // Initialize new audio methods
             }
             
-            menuMusicOn = !menuMusicOn;
-            if (menuMusicOn) {
+            this.settings.musicEnabled = !this.settings.musicEnabled;
+            this.menuMusicOn = this.settings.musicEnabled;
+            if (this.settings.musicEnabled) {
                 this.audio.startMusic('menu');
-                musicBtn.textContent = '🔊 Выключить музыку';
-                musicBtn.style.background = 'linear-gradient(135deg, #8b0000, #4a0000)';
             } else {
                 this.audio.stopMusic();
-                musicBtn.textContent = '🔇 Включить музыку';
-                musicBtn.style.background = 'rgba(50,50,50,0.8)';
             }
+            this.applySettings();
+            this.saveSettings();
         };
         
-        musicBtn.addEventListener('click', toggleMenuMusic);
-        musicBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            toggleMenuMusic();
-        }, { passive: false });
+        if (musicBtn) {
+            musicBtn.addEventListener('click', toggleMenuMusic);
+            musicBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                toggleMenuMusic();
+            }, { passive: false });
+        }
         
         const startBtn = document.getElementById('startBtn');
         const startGame = () => {
@@ -3952,6 +4236,12 @@ const Game = {
             e.preventDefault();
             startGame();
         }, { passive: false });
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && this.running && !this.paused) {
+                this.togglePause();
+            }
+        });
         
         document.addEventListener('keydown', (e) => this.onKeyDown(e));
         document.addEventListener('keyup', (e) => this.onKeyUp(e));
@@ -5494,6 +5784,12 @@ const Game = {
         if (e.key === 'Tab' && this.running && !this.dialogueActive) {
             e.preventDefault();
             this.toggleSkillTree();
+        }
+
+        // Quick restart (R key)
+        if ((e.key === 'r' || e.key === 'R' || e.key === 'к' || e.key === 'К') && this.running && !this.dialogueActive) {
+            e.preventDefault();
+            this.restart();
         }
         
         if (e.key === 'Escape' || e.key === 'p' || e.key === 'P' || e.key === 'з' || e.key === 'З') {
@@ -7634,6 +7930,9 @@ const Game = {
         document.getElementById('landing').classList.add('hidden');
         document.getElementById('gameContainer').classList.add('active');
         
+        if (this.audio) this.audio.stopMusic();
+        this.menuMusicOn = false;
+
         this.level = 0;
         this.score = 0;
         this.combo = 1;
@@ -7655,7 +7954,11 @@ const Game = {
         this.paused = false;
         
         // Music
-        this.audio.startMusic('prologue');
+        if (this.settings.musicEnabled) {
+            this.audio.startMusic('prologue');
+        } else {
+            this.audio.stopMusic();
+        }
         
         // Hide banner during prologue (use runnerHud instead)
         if(document.getElementById('levelBanner')) document.getElementById('levelBanner').style.display = 'none';
@@ -7697,6 +8000,10 @@ const Game = {
             jumpVel: 0,
             cakesCollected: 0
         };
+
+        const { healthMultiplier } = this.applyGameModeModifiers();
+        this.player.maxHealth = Math.round(this.player.maxHealth * healthMultiplier);
+        this.player.health = Math.min(this.player.maxHealth, Math.round(this.player.health * healthMultiplier));
         
         // Arbuz running alongside
         this.arbuz = {
@@ -7744,7 +8051,11 @@ const Game = {
         document.getElementById('runnerHud').classList.remove('active');
         if(document.getElementById('levelBanner')) document.getElementById('levelBanner').style.display = 'block';
         
-        this.audio.startMusic('battle');
+        if (this.settings.musicEnabled) {
+            this.audio.startMusic('battle');
+        } else {
+            this.audio.stopMusic();
+        }
         
         // Reset button label for combat
         document.getElementById('attackBtn').innerHTML = "⚔️<br>УДАР";
@@ -7766,6 +8077,8 @@ const Game = {
     loadLevel(levelIndex) {
         const lvl = this.levels[levelIndex];
         this.level = levelIndex;
+
+        const modeModifiers = this.applyGameModeModifiers();
         
         // Сохраняем уровень для возможного retry
         this.lastDeathLevel = levelIndex;
@@ -7783,6 +8096,10 @@ const Game = {
             savedMaxHealth = this.player.maxHealth;
         }
         
+        // Apply game mode modifiers
+        savedHealth = Math.round(savedHealth * modeModifiers.healthMultiplier);
+        savedMaxHealth = Math.round(savedMaxHealth * modeModifiers.healthMultiplier);
+
         // Reset effects
         this.screenShake = 0;
         this.hitFlash = 0;
@@ -7835,9 +8152,17 @@ const Game = {
         if (lvl.hasBoss && lvl.bossType) {
             this.startBossMusic(lvl.bossType);
         } else if (lvl.hasBoss) {
-            this.audio.startMusic('boss');
+            if (this.settings.musicEnabled) {
+                this.audio.startMusic('boss');
+            } else {
+                this.audio.stopMusic();
+            }
         } else {
-            this.audio.startMusic('battle');
+            if (this.settings.musicEnabled) {
+                this.audio.startMusic('battle');
+            } else {
+                this.audio.stopMusic();
+            }
         }
         
         document.getElementById('levelName').textContent = `Уровень ${levelIndex + 1}: ${lvl.name}`;
@@ -8188,7 +8513,7 @@ const Game = {
     async victory() {
         this.running = false;
         this.paused = true;
-        this.screenShake = 30;
+        this.triggerShake(30);
         
         // Victory cutscene!
         await this.showCutscene([
@@ -8203,8 +8528,12 @@ const Game = {
             { speaker: "Влад", text: "Пойдём домой, Арбуз. А в субботу — снова на паркран!", effect: 'flash' }
         ]);
         
-        this.audio.startMusic('victory');
-        this.score += 2000;
+        if (this.settings.musicEnabled) {
+            this.audio.startMusic('victory');
+        } else {
+            this.audio.stopMusic();
+        }
+        this.addScore(2000);
         const isNewRecord = this.saveHighScore();
         document.getElementById('finalScoreVictory').textContent = this.score;
         if (isNewRecord) {
@@ -8217,7 +8546,7 @@ const Game = {
     async familyVictory() {
         this.running = false;
         this.paused = true;
-        this.screenShake = 40;
+        this.triggerShake(40);
         
         // Показываем диалог конца уровня (если есть)
         const completedLvl = this.levels[this.level];
@@ -8226,10 +8555,14 @@ const Game = {
         }
         
         // Победная музыка
-        this.audio.startMusic('victory');
+        if (this.settings.musicEnabled) {
+            this.audio.startMusic('victory');
+        } else {
+            this.audio.stopMusic();
+        }
         
         // Добавляем бонус за финал
-        this.score += 5000;
+        this.addScore(5000);
         const isNewRecord = this.saveHighScore();
         
         // Обновляем экран победы
@@ -8264,8 +8597,12 @@ const Game = {
         document.getElementById('bossBar').classList.remove('active');
         if(document.getElementById('levelBanner')) document.getElementById('levelBanner').style.display = 'none';
         document.getElementById('runnerHud').classList.add('active');
-        
-        this.audio.startMusic('prologue');
+
+        if (this.settings.musicEnabled) {
+            this.audio.startMusic('prologue');
+        } else {
+            this.audio.stopMusic();
+        }
         
         this.familyParkrunMode = true;
         this.bonusMode = false;
@@ -8311,6 +8648,10 @@ const Game = {
             cakesCollected: 0,
             isValera: true // Валера - главный персонаж!
         };
+
+        const { healthMultiplier } = this.applyGameModeModifiers();
+        this.player.maxHealth = Math.round(this.player.maxHealth * healthMultiplier);
+        this.player.health = Math.min(this.player.maxHealth, Math.round(this.player.health * healthMultiplier));
         
         // Бусенька бежит рядом с Валерой
         this.busenka = {
@@ -8435,8 +8776,12 @@ const Game = {
         document.getElementById('bossBar').classList.remove('active');
         if(document.getElementById('levelBanner')) document.getElementById('levelBanner').style.display = 'none';
         document.getElementById('parkrunHud').classList.add('active');
-        
-        this.audio.startMusic('prologue'); // Cheerful music
+
+        if (this.settings.musicEnabled) {
+            this.audio.startMusic('prologue'); // Cheerful music
+        } else {
+            this.audio.stopMusic();
+        }
         
         this.bonusMode = true;
         this.parkrunDistance = 0;
@@ -8474,6 +8819,10 @@ const Game = {
             walkCycle: 0,
             cakesCollected: 0
         };
+
+        const { healthMultiplier } = this.applyGameModeModifiers();
+        this.player.maxHealth = Math.round(this.player.maxHealth * healthMultiplier);
+        this.player.health = Math.min(this.player.maxHealth, Math.round(this.player.health * healthMultiplier));
         
         // Create Arbuz the dog
         this.arbuz = {
@@ -8610,8 +8959,7 @@ const Game = {
                 cake.collected = true;
                 p.cakesCollected++;
                 
-                const points = cake.isGolden ? 500 : 200;
-                this.score += points;
+                const points = this.addScore(cake.isGolden ? 500 : 200);
                 
                 // Happy particles - more for golden cakes!
                 const particleCount = cake.isGolden ? 25 : 10;
@@ -8632,7 +8980,7 @@ const Game = {
                 
                 // Float text
                 if (cake.isGolden) {
-                    this.spawnFloatingText(cake.x, cake.y - 20, '✨ +500 ЗОЛОТОЙ! ✨', '#ffd700');
+                    this.spawnFloatingText(cake.x, cake.y - 20, `✨ +${points} ЗОЛОТОЙ! ✨`, '#ffd700');
                     // Notify nearby runners about golden cake
                     this.bonusRunners.forEach(r => {
                         if (Math.hypot(cake.x - r.x, cake.y - r.y) < 150) {
@@ -8641,7 +8989,7 @@ const Game = {
                         }
                     });
                 } else {
-                    this.spawnFloatingText(cake.x, cake.y - 20, '+200 🎂', '#ffd700');
+                    this.spawnFloatingText(cake.x, cake.y - 20, `+${points} 🎂`, '#ffd700');
                 }
                 
                 // Celebrate sound effect simulation with more particles
@@ -8669,7 +9017,7 @@ const Game = {
                 cake.collected = true;
                 this.arbuz.eating = true;
                 this.arbuz.eatTimer = 500;
-                this.score += 150;
+                this.addScore(150);
                 
                 // Arbuz happy particles
                 for (let j = 0; j < 8; j++) {
@@ -8796,7 +9144,7 @@ const Game = {
         
         // Bonus for cakes collected
         const cakeBonus = (this.player.cakesCollected || 0) * 100;
-        this.score += 3000 + cakeBonus;
+        this.addScore(3000 + cakeBonus);
         
         // Final celebration dialogue
         await this.showDialogue([
@@ -9737,11 +10085,10 @@ const Game = {
                     // Snake dies
                     this.audio.playExplosion();
                     hitCount++;
-                    const points = Math.floor(snake.config.points * this.combo * damageMultiplier * (isCrit ? 1.5 : 1));
-                    this.score += points;
+                    const points = this.addScore(snake.config.points * this.combo * damageMultiplier * (isCrit ? 1.5 : 1));
                     this.spawnDeathParticles(snake.x, snake.y, snake.config.bodyColor);
                     this.spawnPickup(snake.x, snake.y);
-                    this.hitFlash = isCrit ? 10 : 5;
+                    this.triggerHitFlash(isCrit ? 10 : 5);
                     this.spawnFloatingText(snake.x, snake.y - 20, '+' + points, isCrit ? '#ffd700' : '#ffcc00');
                     
                     // NEW: Visual feedback effects
@@ -9756,7 +10103,7 @@ const Game = {
                     // Elite snakes drop extra pickups
                     if (snake.config.isElite) {
                         this.spawnPickup(snake.x + 20, snake.y);
-                        this.score += 200; // Bonus for elite
+                        this.addScore(200); // Bonus for elite
                         this.spawnFloatingText(snake.x, snake.y - 40, 'ЭЛИТА!', '#ff00ff');
                     }
                     
@@ -9767,7 +10114,7 @@ const Game = {
                 } else {
                     // Snake hit but alive (elite)
                     hitCount++;
-                    this.hitFlash = 3;
+                    this.triggerHitFlash(3);
                     
                     // Knockback - stronger for crit
                     const knockAngle = Math.atan2(snake.y - p.y, snake.x - p.x);
@@ -9828,15 +10175,15 @@ const Game = {
                 const baseDmg = 15 + Math.floor(this.combo / 2) * 5;
                 const dmg = Math.ceil(baseDmg * damageMultiplier * critMultiplier);
                 this.boss.health -= dmg;
-                this.score += 30 * this.combo;
+                this.addScore(30 * this.combo);
                 this.combo++;
                 this.comboTimer = 2500;
                 if (this.combo > this.bestCombo) this.bestCombo = this.combo;
                 this.showCombo();
                 if (this.audio) this.audio.playHit();
                 this.spawnDeathParticles(attackX, attackY, '#7a4a7a');
-                this.hitFlash = isCrit ? 15 : 10;
-                this.screenShake = isCrit ? 8 : 4;
+                this.triggerHitFlash(isCrit ? 15 : 10);
+                this.triggerShake(isCrit ? 8 : 4);
                 
                 // Show damage number on boss
                 this.showDamageNumber(attackX, attackY - 20, dmg, isCrit);
@@ -9857,8 +10204,8 @@ const Game = {
                             ['#7a4a7a', '#cc0000', '#ff00ff'][Math.floor(Math.random() * 3)]
                         );
                     }
-                    this.hitFlash = 25;
-                    this.screenShake = 20; // Big shake on boss death
+                    this.triggerHitFlash(25);
+                    this.triggerShake(20); // Big shake on boss death
                     
                     // Play victory fanfare
                     this.playVictoryFanfare();
@@ -9949,7 +10296,7 @@ const Game = {
         this.comboTimer = 0;
         
         // Screen-wide attack effect
-        this.hitFlash = 15;
+        this.triggerHitFlash(15);
         
         // Spawn massive particle explosion
         for (let i = 0; i < 40; i++) {
@@ -9970,8 +10317,7 @@ const Game = {
         let kills = 0;
         this.snakes.forEach(snake => {
             kills++;
-            const points = snake.config.points * comboBonus;
-            this.score += points;
+            const points = this.addScore(snake.config.points * comboBonus);
             this.spawnDeathParticles(snake.x, snake.y, snake.config.bodyColor);
             this.spawnFloatingText(snake.x, snake.y - 20, '+' + points, '#ff00ff');
         });
@@ -10186,8 +10532,8 @@ const Game = {
         }, 4000);
         
         // Add score bonus
-        this.score += 500;
-        this.spawnFloatingText(this.player.x, this.player.y - 50, '🏆 +500', '#ffd700');
+        const bonus = this.addScore(500);
+        this.spawnFloatingText(this.player.x, this.player.y - 50, `🏆 +${bonus}`, '#ffd700');
     },
     
     loadAchievements() {
@@ -10434,8 +10780,8 @@ const Game = {
                 if (dx < 30 && dy < 35) {
                     // Hit obstacle
                     this.prologueDistance -= 0.03;
-                    this.hitFlash = 8;
-                    this.screenShake = 5;
+                    this.triggerHitFlash(8);
+                    this.triggerShake(5);
                     
                     // Визуальный эффект
                     for (let i = 0; i < 5; i++) {
@@ -10476,8 +10822,8 @@ const Game = {
             if (dx < 35 && dy < 35) {
                 // Collected!
                 p.cakesCollected = (p.cakesCollected || 0) + 1;
-                this.score += 100;
-                this.spawnFloatingText(pickup.x, pickup.y, '🎂 +100', '#ff69b4');
+                const points = this.addScore(100);
+                this.spawnFloatingText(pickup.x, pickup.y, `🎂 +${points}`, '#ff69b4');
                 
                 // Sparkles
                 for (let i = 0; i < 8; i++) {
@@ -10527,8 +10873,8 @@ const Game = {
     
     async triggerSerpentinaAmbush() {
         this.paused = true;
-        this.hitFlash = 20;
-        this.screenShake = 15;
+        this.triggerHitFlash(20);
+        this.triggerShake(15);
         
         // Serpentina ambush cutscene - dramatic reveal!
         await this.showCutscene([
@@ -10666,8 +11012,8 @@ const Game = {
             const dy = Math.abs((p.y + p.jumpY) - pickup.y);
             if (dx < 40 && dy < 40) {
                 p.cakesCollected = (p.cakesCollected || 0) + 1;
-                this.score += pickup.type === 'heart' ? 200 : 100;
-                this.spawnFloatingText(pickup.x, pickup.y, pickup.type === 'heart' ? '💖 +200' : '🎂 +100', '#ff69b4');
+                const points = this.addScore(pickup.type === 'heart' ? 200 : 100);
+                this.spawnFloatingText(pickup.x, pickup.y, pickup.type === 'heart' ? `💖 +${points}` : `🎂 +${points}`, '#ff69b4');
                 
                 for (let i = 0; i < 10; i++) {
                     this.particles.push({
@@ -10747,8 +11093,12 @@ const Game = {
         ]);
         
         // Показываем итоговый экран
-        this.audio.startMusic('victory');
-        this.score += 10000; // Большой бонус за финал!
+        if (this.settings.musicEnabled) {
+            this.audio.startMusic('victory');
+        } else {
+            this.audio.stopMusic();
+        }
+        this.addScore(10000); // Большой бонус за финал!
         const isNewRecord = this.saveHighScore();
         
         document.getElementById('familyFinalScore').textContent = this.score;
@@ -10881,7 +11231,7 @@ const Game = {
             
             // Visual and audio feedback
             this.spawnFloatingText(p.x, p.y - 60, '💪 ВТОРОЕ ДЫХАНИЕ!', '#00ff88');
-            this.screenShake = 10;
+            this.triggerShake(10);
             if (this.audio) this.audio.playCrit();
             
             // Burst of particles
@@ -10927,6 +11277,7 @@ const Game = {
         
         const p = this.player;
         const now = Date.now();
+        const { damageMultiplier } = this.applyGameModeModifiers();
         
         this.traps.forEach(trap => {
             trap.phase += dt * 0.005;
@@ -10941,12 +11292,13 @@ const Game = {
                 if (trapConfig.interval === 0) {
                     // Instant damage (spikes)
                     if (now - trap.lastDamage > 500) {
-                        p.health -= trapConfig.damage;
+                        const trapDamage = Math.round(trapConfig.damage * damageMultiplier);
+                        p.health -= trapDamage;
                         p.invulnerable = true;
                         p.invulnerableTimer = 400;
                         trap.lastDamage = now;
-                        this.hitFlash = 20;
-                        this.spawnFloatingText(p.x, p.y - 40, `-${trapConfig.damage}`, '#ff6666');
+                        this.triggerHitFlash(20);
+                        this.spawnFloatingText(p.x, p.y - 40, `-${trapDamage}`, '#ff6666');
                         
                         // Spawn spike particles
                         for (let i = 0; i < 5; i++) {
@@ -10964,10 +11316,11 @@ const Game = {
                 } else {
                     // DOT damage (poison, fire, shadow)
                     if (now - trap.lastDamage > trapConfig.interval) {
-                        p.health -= trapConfig.damage;
+                        const trapDamage = Math.round(trapConfig.damage * damageMultiplier);
+                        p.health -= trapDamage;
                         trap.lastDamage = now;
-                        this.hitFlash = 10;
-                        this.spawnFloatingText(p.x, p.y - 40, `-${trapConfig.damage}`, trapConfig.color);
+                        this.triggerHitFlash(10);
+                        this.spawnFloatingText(p.x, p.y - 40, `-${trapDamage}`, trapConfig.color);
                     }
                 }
                 
@@ -10981,6 +11334,7 @@ const Game = {
     updateSnakes(dt) {
         const p = this.player;
         if (!p) return;
+        const { damageMultiplier } = this.applyGameModeModifiers();
         
         // Normalize dt to ~60fps (16.67ms per frame)
         const timeScale = dt / 16.67;
@@ -11018,18 +11372,19 @@ const Game = {
                         p.invulnerableTimer = 500;
                         this.spawnFloatingText(p.x, p.y - 30, 'ЩИТ!', '#ffd700');
                         this.spawnDeathParticles(p.x, p.y, '#ffd700');
-                        this.hitFlash = 5;
-                        this.screenShake = 5;
+                        this.triggerHitFlash(5);
+                        this.triggerShake(5);
                     } else {
-                        p.health -= snake.config.damage;
+                        const incomingDamage = Math.round(snake.config.damage * damageMultiplier);
+                        p.health -= incomingDamage;
                         p.invulnerable = true;
                         p.invulnerableTimer = 1000;
                         this.combo = 1;
                         this.spawnDeathParticles(p.x, p.y, '#ff4444');
-                        this.hitFlash = 8;
-                        this.screenShake = snake.config.damage * 0.5; // Shake based on damage
+                        this.triggerHitFlash(8);
+                        this.triggerShake(incomingDamage * 0.5); // Shake based on damage
                         if (this.audio) this.audio.playHit();
-                        this.spawnFloatingText(p.x, p.y - 30, '-' + snake.config.damage, '#ff4444');
+                        this.spawnFloatingText(p.x, p.y - 30, '-' + incomingDamage, '#ff4444');
                         
                         // Ice snake slows player
                         if (snake.config.canSlow) {
@@ -11038,7 +11393,7 @@ const Game = {
                             this.spawnFloatingText(p.x, p.y - 50, '❄️ ЗАМОРОЗКА!', '#80d0ff');
                         }
                         
-                        this.levelDamageTaken += snake.config.damage;
+                        this.levelDamageTaken += incomingDamage;
                         if (p.health <= 0) this.gameOver();
                     }
                     this.updateHUD();
@@ -11413,13 +11768,15 @@ const Game = {
         if (!p.invulnerable) {
             const playerDist = Math.hypot(p.x - b.x, p.y - b.y);
             if (playerDist < 55) {
-                p.health -= 25;
+                const { damageMultiplier } = this.applyGameModeModifiers();
+                const contactDamage = Math.round(25 * damageMultiplier);
+                p.health -= contactDamage;
                 p.invulnerable = true;
                 p.invulnerableTimer = 800;
                 this.combo = 1;
                 this.spawnDeathParticles(p.x, p.y, '#ff4444');
-                this.hitFlash = 12;
-                this.spawnFloatingText(p.x, p.y - 30, '-25', '#ff4444');
+                    this.triggerHitFlash(12);
+                this.spawnFloatingText(p.x, p.y - 30, `-${contactDamage}`, '#ff4444');
                 this.updateHUD();
                 
                 if (p.health <= 0) this.gameOver();
@@ -11501,12 +11858,14 @@ const Game = {
                 
                 const dist = Math.hypot(p.x - particle.x, p.y - particle.y);
                 if (dist < hitRadius) {
-                    p.health -= damage;
+                    const { damageMultiplier } = this.applyGameModeModifiers();
+                    const scaledDamage = damage * damageMultiplier;
+                    p.health -= scaledDamage;
                     if (damage >= 10) {
                         p.invulnerable = true;
                         p.invulnerableTimer = 500;
-                        this.hitFlash = 8;
-                        this.spawnFloatingText(p.x, p.y - 30, '-' + Math.floor(damage), '#ff4444');
+                        this.triggerHitFlash(8);
+                        this.spawnFloatingText(p.x, p.y - 30, '-' + Math.floor(scaledDamage), '#ff4444');
                     }
                     this.updateHUD();
                     if (p.health <= 0) this.gameOver();
@@ -11646,7 +12005,7 @@ const Game = {
                 );
                 
                 // Bonus score for completing wave
-                this.score += 200 * this.currentWave;
+                this.addScore(200 * this.currentWave);
                 
                 return;
             }
@@ -11680,7 +12039,7 @@ const Game = {
                 bonusText.push('🔥 Мастер комбо +300');
             }
             
-            this.score += bonusScore;
+            this.addScore(bonusScore);
             
             // Показываем бонусы
             if (bonusText.length > 0) {
@@ -21315,8 +21674,7 @@ const Game = {
                 
                 if (snake.health <= 0) {
                     this.audio.playExplosion();
-                    const points = Math.floor(snake.config.points * this.combo * damageMultiplier);
-                    this.score += points;
+                    this.addScore(snake.config.points * this.combo * damageMultiplier);
                     this.spawnDeathParticles(snake.x, snake.y, snake.config.bodyColor);
                     this.spawnPickup(snake.x, snake.y);
                     return false;
